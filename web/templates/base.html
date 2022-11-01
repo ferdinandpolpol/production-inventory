@@ -2,7 +2,9 @@
 <html>
     <head>
         <title>{% block title %}Test{% endblock %}</title>
-        <link rel="stylesheet" href="{% static 'styles/bootstrap.css' %}" />
+        <link rel="stylesheet" href="{% static 'bootstrap-4.0.0-dist/css/bootstrap.css' %}" />
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     </head>
 
     <body>
@@ -10,9 +12,9 @@
         {% block content %}
         {% endblock %}
         </div>
-        <script src="{% static 'styles/bootstrap.js' %}" />
-        <script src="https://code.jquery.com/jquery-3.6.1.js" 
-            integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" 
-            crossorigin="anonymous"></script>
+        
+        <!-- Scripts -->
+        <script src="{% static 'bootstrap-4.0.0-dist/js/bootstrap.js' %}"  type="text/javascript" />
+        {% block scripts %}{% endblock %}
     </body>
 </html>

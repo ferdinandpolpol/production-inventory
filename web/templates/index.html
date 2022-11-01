@@ -3,18 +3,30 @@
 {% block content %}
 
 
-<form class="form">
-    <label for="product">Product</label>
-    <select id="product">
-        {% for product in products %}
-        <option>{{ product.name }}</option>
-        {% endfor %}
-    </select>
-    
-    <label for="quantityProduced">Actual Production</label>
-    <input id="quantityProduced" type="text" min=0 />
+<form id="createProductionData" class="form mt-5">
+    <div class="row">
+        <div class="col">
+            <label for="product">Product</label>
+        </div>
+        <div class="col">
+            <select id="product">
+                <option value="none">...</option>
+                {% for product in products %}
+                <option value="{{ product.id }}">{{ product.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <label for="quantityProduced">Actual Production</label>
+        </div>
+        <div class="col">
+            <input id="quantityProduced" type="text" min=0 />
+        </div>
+    </div>
 
-    <table class="table">
+    <table class="table hidden">
         <thead>
             <tr>
                 <th>ITM</th>
@@ -26,23 +38,47 @@
         <tbody id="tableIngredientBody">
         </tbody>
     </table>
-    
+
+    <button type="submit">Submit</button>
 </form>
+
+Production Report for <span>test</span>
+
+<table id="productionReport">
+
+</table>
 
 
 <script>
-    
-    $("#product").on("click", (e) => {
-        $ajax({
-            url: "",
-            data: {},
-            success: (res) => {
-                $("#tableIngredientBody").html(
-                    
-                )
-            }
+    $(document).ready(function () {
+        $("#createProductionData").on("submit", (e) => {
+            e.preventDefault();
+
+            let pro
+
         })
-    })
+
+        $("#product").on("click", (e) => {
+            let productId = $("#product").find(":selected").val()
+            $.ajax({
+                url: `/api/product/${ productId }`,
+                method: 'GET',
+                data: {},
+                success: (res) => {
+                    let html = ""
+                    for (let ingredient of res.recipe) {
+                        html += `<tr>
+                            <td>${ ingredient.ingredient.name }</td>
+                            <td>${ ingredient.quantity }</td>
+                            <td>${ ingredient.ingredient.unit }</td>
+                            <td><input type="number" min=1 name="ingredient-${ingredient.id}" /></td>
+                        </tr>`
+                    }
+                    $("#tableIngredientBody").html(html)
+                }
+            })
+        }) 
+    });
 </script>
 
 {% endblock %}
