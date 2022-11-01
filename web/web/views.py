@@ -140,15 +140,37 @@ def reports_api(request):
         supply_inventory_list = Supply.objects.filter(supplied_at__range=[
                                                       from_date, to_date]).values("item__name", "quantity", "supplied_at").order_by("-supplied_at")
 
-        total_production_per_product = Production.objects.filter(
-            date__range=[from_date, to_date]).values("product__name").annotate(Sum('quantity'))
+        productions = Production.objects.filter(
+            date__range=[from_date, to_date])
+        sales = Sales.objects.filter(date__range=[from_date, to_date])
+
+        total_production_per_product = productions.values(
+            "product__name").annotate(Sum('quantity'))
+        total_sales = sales.values(
+            "customer__name", "product__name").annotate(Sum('quantity'))
+        total_freebies = sales.values(
+            "customer__name", "product__name").annotate(Sum('freebies'))
+        total_sales_per_product = sales.values(
+            "product__name").annotate(sum_out=Sum(F('quantity') + F('freebies')))
+
+        current_inventory = {
+            product["product__name"]: product["quantity__sum"]
+            for product in total_production_per_product
+        }
+        for sales in total_sales_per_product:
+            key = sales["product__name"]
+            current_inventory[key] = float(
+                current_inventory[key]) - float(sales["sum_out"])
 
         return Response(
             {
                 "supply_inventory_list": supply_inventory_list,
                 "production_supply_totals": production_supply_totals,
                 "per_product_supply_totals": per_product_supply_totals,
-                "total_production_per_product": total_production_per_product
+                "total_production_per_product": total_production_per_product,
+                "total_sales": total_sales,
+                "total_freebies": total_freebies,
+                "current_inventory": current_inventory
             }, status=status.HTTP_200_OK)
 
     return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

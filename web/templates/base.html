@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>
-            {% block title %}Test{% endblock %}
+            {% block title %}Amoren's Crispy Mix{% endblock %}
         </title>
         <link rel="stylesheet"
               href="{% static 'bootstrap-4.0.0-dist/css/bootstrap.css' %}"/>
@@ -26,6 +26,17 @@
                 })
             }
         </script>
+        <style>
+            body {
+                background-color: #dc3545;
+            }
+            .form-group, .container {
+                background-color: #fff;
+                margin: 10px;
+                padding: 10px;
+                border-radius: 20px;
+            }
+        </style>
     </head>
     <body>
         <div class="container">
@@ -34,7 +45,6 @@
         <script>
             $(document).ready(() => {
             
-                console.log("here")
                 var today = new Date();
                 var dd = String(today.getDate()).padStart(2, '0');
                 var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!

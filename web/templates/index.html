@@ -4,7 +4,7 @@
         <div class="form-group">
             <label for="product">Product</label>
             <select id="product" class="form-control">
-                <option value="none">
+                <option value="">
                     ...
                 </option>
                 {% for product in products %}
@@ -23,7 +23,7 @@
             <input id="dateProduced" type="date" min=0 class="form-control" />
         </div>
         <table class="table">
-            <thead>
+            <thead class="thead-dark">
                 <tr>
                     <th>ITM</th>
                     <th>QTY</th>
@@ -52,11 +52,11 @@
         <table id="productionReport" class="table table-striped mt-5">
             <thead class="thead-dark">
                 <tr>
-                    <td>Product</td>
-                    <td>Quantity Produced</td>
-                    <td>Production Date</td>
-                    <td>Ingredients</td>
-                    <td>Ingredient Used</td>
+                    <th>Product</th>
+                    <th>Quantity Produced</th>
+                    <th>Production Date</th>
+                    <th>Ingredients</th>
+                    <th>Ingredient Used</th>
                 </tr>
             </thead>
             <tbody id="tableProductionList">
@@ -65,8 +65,8 @@
         <table id="productionReportTotals" class="table table-striped">
             <thead class="thead-dark">
                 <tr>
-                    <td>Product</td>
-                    <td>Total Produced</td>
+                    <th>Product</th>
+                    <th>Total Produced</th>
                 </tr>
             </thead>
             <tbody id="tableProductionListTotals">
@@ -171,6 +171,8 @@
             $("#tableIngredientBody").html("")
             let productId = $("#product").find(":selected").val()
 
+            if (productId == null) return 
+
             request("GET", `/api/product/${ productId }`, {}, 
                 (res)=> {
                     let html = ""
@@ -184,6 +186,7 @@
                             <td>${ ingredient.ingredient.name }</td>
                             <td>...</td>
                             <td>${ ingredient.ingredient.unit }</td>
+                            
                             <td><input type="number" data-recipe-quantity="${ingredient.quantity}" data-main-ingredient="${mainIngredient}" data-multiplied-by-main-ingredient="${multipliedByMainIngredient}" data-multiplied-by-production="${multipliedByProduction}" />
                             </td>
                         </tr>
