@@ -18,6 +18,10 @@
             <label for="quantityProduced">Actual Production</label>
             <input id="quantityProduced" type="text" min=0 class="form-control" />
         </div>
+        <div class="form-group">
+            <label for="dateProduced">Actual Production</label>
+            <input id="dateProduced" type="date" min=0 class="form-control" />
+        </div>
         <table class="table">
             <thead>
                 <tr>
@@ -77,8 +81,10 @@
         var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
         var yyyy = today.getFullYear();
         today = `${yyyy}-${mm}-${dd}`
-
-        $(".production-date-input").val(today);
+        
+        $("input[date]").each((index, item) => {
+            $(item).val(today)
+        })
 
         // POST Production data
         $("#createProductionData").on("submit", (e) => {
@@ -87,6 +93,7 @@
             let data = {
                 product: String($("#product").find(":selected").val()),
                 quantity: String($("#quantityProduced").val()),
+                date: String($("#dateProduced").val()),
                 ingredients: []
             }
 

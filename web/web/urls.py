@@ -24,10 +24,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
     path('sales/', views.sales, name='sales'),
-
+    path('supply/', views.supply, name='supply'),
 
     # APIs
     path('api/sales/', views.sales_api),
+    path('api/supply/', views.supply_api),
     path('api/product/<int:product_id>', views.get_product),
     path('api/production/', views.production_api),
     path('api/production/<int:id>', views.production_api),

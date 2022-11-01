@@ -3,7 +3,7 @@
 from rest_framework import serializers
 from django.db.models import F, Sum
 
-from .models import Ingredient, Product, Production, ProductionIngredients, Recipe, Sales, SupplyItem
+from .models import Ingredient, Product, Production, ProductionIngredients, Recipe, Sales, Supply, SupplyItem
 
 
 class SupplyItemSerializer(serializers.ModelSerializer):
@@ -76,3 +76,9 @@ class SalesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sales
         exclude = ("projected_sale",)
+
+
+class SupplySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Supply
+        fields = ("__all__")
