@@ -1,89 +1,86 @@
 {% extends "base.html" %}
-
 {% block content %}
-
-
-<form id="createProductionData" class="form mt-5">
-    <div class="row">
-        <div class="col">
-            <label for="product">Product</label>
+    <form id="createProductionData" class="form mt-5 p-5 border border-2">
+        <div class="row">
+            <div class="col">
+                <label for="product">Product</label>
+            </div>
+            <div class="col">
+                <select id="product">
+                    <option value="none">
+                        ...
+                    </option>
+                    {% for product in products %}
+                        <option value="{{ product.id }}">
+                            {{ product.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
-        <div class="col">
-            <select id="product">
-                <option value="none">...</option>
-                {% for product in products %}
-                <option value="{{ product.id }}">{{ product.name }}</option>
-                {% endfor %}
-            </select>
+        <div class="row">
+            <div class="col">
+                <label for="quantityProduced">Actual Production</label>
+            </div>
+            <div class="col">
+                <input id="quantityProduced" type="text" min=0 />
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <label for="quantityProduced">Actual Production</label>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ITM</th>
+                    <th>QTY</th>
+                    <th>UNIT</th>
+                    <th>AMOUNT USED</th>
+                </tr>
+            </thead>
+            <tbody id="tableIngredientBody">
+            </tbody>
+        </table>
+        <button type="submit">Submit</button>
+    </form>
+    <div class="border border-2 p-5">
+        <div class="row mt-5">
+            <div class="col">Production Report from</div>
+            <div class="col">
+                <input type="date"
+                       id="productionFrom"
+                       name="production-from"
+                       class="production-date-input"/>
+            </div>
+            <div class="col">
+                <input type="date"
+                       id="productionTo"
+                       name="production-to"
+                       class="production-date-input"/>
+            </div>
         </div>
-        <div class="col">
-            <input id="quantityProduced" type="text" min=0 />
-        </div>
+        <table id="productionReport" class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <td>Product</td>
+                    <td>Quantity Produced</td>
+                    <td>Production Date</td>
+                    <td>Ingredients</td>
+                    <td>Ingredient Used</td>
+                </tr>
+            </thead>
+            <tbody id="tableProductionList">
+            </tbody>
+        </table>
+        <table id="productionReportTotals" class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <td>Product</td>
+                    <td>Total Produced</td>
+                </tr>
+            </thead>
+            <tbody id="tableProductionListTotals">
+            </tbody>
+        </table>
     </div>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ITM</th>
-                <th>QTY</th>
-                <th>UNIT</th>
-                <th>AMOUNT USED</th>
-            </tr>
-        </thead>
-        <tbody id="tableIngredientBody">
-        </tbody>
-    </table>
-
-    <button type="submit">Submit</button>
-</form>
-
-<div class="row mt-5">
-    <div class="col">
-        Production Report from 
-    </div>
-    <div class="col">
-        <input type="date" id="productionFrom" name="production-from" class="production-date-input"/>
-    </div>
-    <div class="col">
-        <input type="date" id="productionTo" name="production-to" class="production-date-input"/>
-    </div>
-</div>
-<span></span>
-
-<table id="productionReport" class="table table-striped">
-    <thead class="thead-dark">
-        <tr>
-            <td>Product</td>
-            <td>Quantity Produced</td>
-            <td>Production Date</td>
-            <td>Ingredients</td>
-        </tr>
-    </thead>
-    <tbody id="tableProductionList">
-    </tbody>
-</table>
-
-<table id="productionReportTotals" class="table table-striped">
-    <thead class="thead-dark">
-        <tr>
-            <td>Product</td>
-            <td>Total Produced</td>
-        </tr>
-    </thead>
-
-    <tbody id="tableProductionListTotals">
-    </tbody>
-</table>
-
-
-
-
-<script>
+    <script>
     function request (method="GET", url, data={}, success_cb=null, error_cb=null) {
         $.ajax({
             type: method,
@@ -140,13 +137,14 @@
                     let html = ""
                     for (let production of res) {
                         let ingredientsList = ""
+                        let ingredientsList2 = ""
 
                         production.ingredients.map((ingredient) => {
                             ingredientsList += `
-                                <li>${ ingredient.ingredient.name } - x 
-                                    ${ ingredient.quantity } 
-                                    ${ ingredient.ingredient.unit }
-                                </li>
+                                <li>${ ingredient.ingredient.name }</li>
+                            `
+                            ingredientsList2 += `
+                                <li>x ${ ingredient.quantity } ${ ingredient.ingredient.unit }</li>
                             `
                         })
                         
@@ -156,6 +154,7 @@
                                 <td>${ production.quantity }</td>
                                 <td>${ production.date }</td>
                                 <td><ul>${ ingredientsList }</ul></td>
+                                <td><ul>${ ingredientsList2 }</ul></td>
                             </tr>
                         `
                     }
@@ -187,8 +186,8 @@
             getProduction(from, to)
         })
 
-    // Populate the ingredients list when choosing a product
-    // Creating a table that accepts input how many ingredients are used
+      // Populate the ingredients list when choosing a product
+      // Creating a table that accepts input how many ingredients are used
         $("#product").on("click", (e) => {
             $("#tableIngredientBody").html("")
             let productId = $("#product").find(":selected").val()
@@ -197,23 +196,48 @@
                 (res)=> {
                     let html = ""
                     for (let ingredient of res.recipe.ingredients) {
+                        let mainIngredient = ingredient.main_ingredient
+                        let multipliedByMainIngredient = ingredient.multiplied_by_main_ingredient 
+                        let multipliedByProduction = ingredient.multiplied_by_production
+                        
                         html += `
                         <tr data-ingredient="${ingredient.ingredient.id}">
                             <td>${ ingredient.ingredient.name }</td>
                             <td>...</td>
                             <td>${ ingredient.ingredient.unit }</td>
-                            <td><input type="number" min="1" /></td>
+                            <td><input type="number" data-recipe-quantity="${ingredient.quantity}" data-main-ingredient="${mainIngredient}" data-multiplied-by-main-ingredient="${multipliedByMainIngredient}" data-multiplied-by-production="${multipliedByProduction}" />
+                            </td>
                         </tr>
                         `
                     }
 
                     $("#tableIngredientBody").html(html)
+                    
+                    // TODO: Discuss if we can show the ingredients
+                    $("#tableIngredientBody [data-main-ingredient=false]").each((index, item) => {
+                        $(item).prop({type: "hidden"})
+                    })
+                    $("#tableIngredientBody [data-main-ingredient=true]").keyup((e) => {
+                        e.preventDefault()
+
+                        let value = e.target.value
+                        $("#tableIngredientBody [data-multiplied-by-main-ingredient=true]").each((index, item) => {
+                            let recipeQuantity = $(item).data("recipeQuantity")
+                            $(item).val(parseFloat(recipeQuantity) * parseFloat(value))
+                        })
+                    })
                 }
             )
         }) 
+
+        $("#quantityProduced").keyup((e) => {
+            e.preventDefault()
+            
+            let value = e.target.value
+            $("#tableIngredientBody [data-multiplied-by-production=true]").each((index, item) => {
+                $(item).val(value)
+            })
+        })
     });
-</script>
-
-<script>
-
+    </script>
 {% endblock %}
