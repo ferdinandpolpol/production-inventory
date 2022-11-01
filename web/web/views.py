@@ -11,7 +11,7 @@ from django.db.models import F, Sum
 
 from .serializers import ProductSerializer, ProductionListSerializer, ProductionSerializer, RecipeSerializer, SalesSerializer, SupplySerializer
 
-from .models import Product, Production, Sales, Customer, SupplyItem
+from .models import Product, Production, ProductionIngredients, Sales, Customer, Supply, SupplyItem
 
 
 def index(request):
@@ -37,6 +37,10 @@ def supply(request):
         "supply_items": SupplyItem.objects.all(),
     }
     return render(request, 'supply.html', context)
+
+
+def reports(request):
+    return render(request, 'reports.html')
 
 
 @api_view(['GET'])
@@ -114,5 +118,37 @@ def supply_api(request):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def reports_api(request):
+    if request.method == "GET":
+        from_date = request.query_params["from"]
+        to_date = request.query_params["to"]
+        production_supply_totals = ProductionIngredients.objects. \
+            filter(production__date__range=[from_date, to_date]). \
+            values('ingredient__name'). \
+            annotate(Sum('quantity'))
+        per_product_supply_totals = {}
+        for product in Product.objects.all():
+            per_product_supply_totals[product.name] = ProductionIngredients.objects. \
+                filter(production__date__range=[from_date, to_date], production__product=product). \
+                values('ingredient__name'). \
+                annotate(Sum('quantity'))
+        supply_inventory_list = Supply.objects.filter(supplied_at__range=[
+                                                      from_date, to_date]).values("item__name", "quantity", "supplied_at").order_by("-supplied_at")
+
+        total_production_per_product = Production.objects.filter(
+            date__range=[from_date, to_date]).values("product__name").annotate(Sum('quantity'))
+
+        return Response(
+            {
+                "supply_inventory_list": supply_inventory_list,
+                "production_supply_totals": production_supply_totals,
+                "per_product_supply_totals": per_product_supply_totals,
+                "total_production_per_product": total_production_per_product
+            }, status=status.HTTP_200_OK)
 
     return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

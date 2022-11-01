@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="form-inline">
+        <label>Production Report from</label>
+        <input type="date"
+               id="reportsFrom"
+               name="production-from"
+               class="form-control report-date-input mx-2"/>
+        <label>To</label>
+        <input type="date"
+               id="reportsTo"
+               name="production-to"
+               class="form-control report-date-input mx-2"/>
+    </div>
+    <div class="form-group mt-5">
+        <h3>Supply IN</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <td>Supply Item</td>
+                    <td>Quantity</td>
+                    <td>Date IN</td>
+                </tr>
+            </thead>
+            <tbody id="supplyList">
+            </tbody>
+        </table>
+        <h3>Total Supplies used</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <td>Supply Item</td>
+                    <td>Total</td>
+                </tr>
+            </thead>
+            <tbody id="supplyTotals">
+            </tbody>
+        </table>
+    </div>
+    <div id="perProductSupplyTotals"></div>
+    <div>
+        <h3>Total Production Per Product</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <td>Product</td>
+                    <td>Total Quantity</td>
+                </tr>
+            </thead>
+            <tbody id="totalPerProduct">
+            </tbody>
+        </table>
+    </div>
+    <script>
+        function getReportsData (from, to) {
+            request("GET", `/api/reports/?from=${ from }&to=${ to }`, {}, (res) => {
+                
+                // TOTAL SUPPLIES USED 
+                let supplyTotalsHTML = ""
+                res.production_supply_totals.map((supply) => {
+                    supplyTotalsHTML += `
+                        <tr>
+                            <td>${ supply.ingredient__name }</td>
+                            <td>${ supply.quantity__sum }</td>
+                        </tr>
+                    `
+                })
+                $("#supplyTotals").html(supplyTotalsHTML)
+                
+                // TOTAL SUPPLIES USED FOR EACH PRODUCT
+                let perProductSupplyTotalsHTML = ""
+                for (let product of Object.keys(res.per_product_supply_totals)) {
+                    let tmp = ""
+                    res.per_product_supply_totals[product].map((supply) => {
+                        tmp += `
+                        <tr>
+                            <td>${ supply.ingredient__name }</td>
+                            <td>${ supply.quantity__sum }</td>
+                        </tr>
+                    `
+                    })
+
+                    perProductSupplyTotalsHTML += `
+                    <h3>Total Supply used for ${ product }</h3>
+                    <table class='table table-striped'>
+                        <thead>
+                            <tr>
+                                <td>Supply Item</td>
+                                <td>Total Quantity</td>
+                            </tr>
+                        </thead>
+                        <tbody>${ tmp }</tbody>
+                    </table>
+                    `
+                }
+                $("#perProductSupplyTotals").html(perProductSupplyTotalsHTML)
+                
+                // LIST OF ALL SUPPLY IN
+                let supplyListHTML = ""
+                res.supply_inventory_list.map((supply) => {
+                    supplyListHTML += `
+                    <tr>
+                        <td>${ supply.item__name }</td>
+                        <td>${ supply.quantity }</td>
+                        <td>${ supply.supplied_at }</td>
+                    </tr>`
+                })
+                $("#supplyList").html(supplyListHTML)
+
+                // Total Produced Per Product
+                let totalPerProductHTML = ""
+                res.total_production_per_product.map((product) => {
+                    totalPerProductHTML += `
+                    <tr>
+                        <td>${ product.product__name }</td>
+                        <td>${ product.quantity__sum }</td>
+                    </tr>`
+                })
+                $("#totalPerProduct").html(totalPerProductHTML)
+            })
+        }
+
+        $(".report-date-input").on("change", (e)=> {
+            e.preventDefault()
+
+            let from = $("#reportsFrom").val()
+            let to = $("#reportsTo").val()
+
+            getReportsData(from, to)
+        })
+    </script>
+{% endblock content %}

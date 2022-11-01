@@ -5,6 +5,8 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
 
+# ProductionIngredients.objects.filter(production__in=[12,13]).values('ingredient__name').annotate(Sum('quantity'))
+
 class CustomerType(models.Model):
     name = models.CharField(max_length=255)
 
@@ -98,11 +100,6 @@ class Production(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField()
     date = models.DateField()
-
-    def ingredients_used(self, *args, **kwargs):
-        return self.product.get_ingredients().annotate(
-            ingredients_used=F('quantity') * self.quantity
-        ).values()
 
 
 class Sales(models.Model):
