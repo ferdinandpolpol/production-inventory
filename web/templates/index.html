@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    <table class="table hidden">
+    <table class="table">
         <thead>
             <tr>
                 <th>ITM</th>
@@ -42,43 +42,178 @@
     <button type="submit">Submit</button>
 </form>
 
-Production Report for <span>test</span>
+<div class="row mt-5">
+    <div class="col">
+        Production Report from 
+    </div>
+    <div class="col">
+        <input type="date" id="productionFrom" name="production-from" class="production-date-input"/>
+    </div>
+    <div class="col">
+        <input type="date" id="productionTo" name="production-to" class="production-date-input"/>
+    </div>
+</div>
+<span></span>
 
-<table id="productionReport">
+<table id="productionReport" class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <td>Product</td>
+            <td>Quantity Produced</td>
+            <td>Production Date</td>
+            <td>Ingredients</td>
+        </tr>
+    </thead>
+    <tbody id="tableProductionList">
+    </tbody>
+</table>
 
+<table id="productionReportTotals" class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <td>Product</td>
+            <td>Total Produced</td>
+        </tr>
+    </thead>
+
+    <tbody id="tableProductionListTotals">
+    </tbody>
 </table>
 
 
+
+
 <script>
+    function request (method="GET", url, data={}, success_cb=null, error_cb=null) {
+        $.ajax({
+            type: method,
+            url: url,
+            data: data,
+            contentType: "application/json",
+            headers:{"X-CSRFToken": "{{ csrf_token }}"},
+            dataType: "json",
+            success: (res) => {
+                if (success_cb) success_cb(res)
+            },
+            error: (res) => {
+                if (error_cb) error_cb(res)
+            }
+        })
+    }
+
+    // Instantiate when the document has loaded
     $(document).ready(function () {
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+        today = `${yyyy}-${mm}-${dd}`
+
+        $(".production-date-input").val(today);
+
+        // POST Production data
         $("#createProductionData").on("submit", (e) => {
             e.preventDefault();
 
-            let pro
+            let data = {
+                product: String($("#product").find(":selected").val()),
+                quantity: String($("#quantityProduced").val()),
+                ingredients: []
+            }
 
+            $("#tableIngredientBody tr").each((i, itm) => {
+                data.ingredients.push({
+                    "ingredient": String(itm.dataset.ingredient),
+                    "quantity": String($(itm).find("input").val())
+                })
+            })
+            request("POST", `/api/production/`, JSON.stringify(data), 
+                (res)=> {
+                    alert("Successfully created production data.")
+                }
+            )
         })
 
-        $("#product").on("click", (e) => {
-            let productId = $("#product").find(":selected").val()
-            $.ajax({
-                url: `/api/product/${ productId }`,
-                method: 'GET',
-                data: {},
-                success: (res) => {
+        function getProduction(from=today, to=today) {
+            request("GET", `/api/production/?from=${ from }&to=${ to }`, {}, 
+                (res)=> {
                     let html = ""
-                    for (let ingredient of res.recipe) {
-                        html += `<tr>
-                            <td>${ ingredient.ingredient.name }</td>
-                            <td>${ ingredient.quantity }</td>
-                            <td>${ ingredient.ingredient.unit }</td>
-                            <td><input type="number" min=1 name="ingredient-${ingredient.id}" /></td>
-                        </tr>`
+                    for (let production of res) {
+                        let ingredientsList = ""
+
+                        production.ingredients.map((ingredient) => {
+                            ingredientsList += `
+                                <li>${ ingredient.ingredient.name } - x 
+                                    ${ ingredient.quantity } 
+                                    ${ ingredient.ingredient.unit }
+                                </li>
+                            `
+                        })
+                        
+                        html += `
+                            <tr data-production="${production.id}">
+                                <td>${ production.product.name }</td>
+                                <td>${ production.quantity }</td>
+                                <td>${ production.date }</td>
+                                <td><ul>${ ingredientsList }</ul></td>
+                            </tr>
+                        `
                     }
+                    $("#tableProductionList").html(html)
+                })
+            request("GET", `/api/production/totals/?from=${ from }&to=${ to }`, {},
+                (response) => {
+                    let html = ""
+                    response.map((productTotal) => {
+                        html += `
+                            <tr>
+                                <td>${ productTotal.product__name }</td>
+                                <td>${ productTotal.totals }</td>
+                            </tr>
+                        `
+                    })
+                    $("#tableProductionListTotals").html(html)
+                }
+            )
+        }
+        getProduction()
+
+        $(".production-date-input").on("change", (e)=> {
+            e.preventDefault()
+
+            let from = $("#productionFrom").val()
+            let to = $("#productionTo").val()
+
+            getProduction(from, to)
+        })
+
+    // Populate the ingredients list when choosing a product
+    // Creating a table that accepts input how many ingredients are used
+        $("#product").on("click", (e) => {
+            $("#tableIngredientBody").html("")
+            let productId = $("#product").find(":selected").val()
+
+            request("GET", `/api/product/${ productId }`, {}, 
+                (res)=> {
+                    let html = ""
+                    for (let ingredient of res.recipe.ingredients) {
+                        html += `
+                        <tr data-ingredient="${ingredient.ingredient.id}">
+                            <td>${ ingredient.ingredient.name }</td>
+                            <td>...</td>
+                            <td>${ ingredient.ingredient.unit }</td>
+                            <td><input type="number" min="1" /></td>
+                        </tr>
+                        `
+                    }
+
                     $("#tableIngredientBody").html(html)
                 }
-            })
+            )
         }) 
     });
 </script>
+
+<script>
 
 {% endblock %}
