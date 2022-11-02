@@ -10,11 +10,14 @@ from django.dispatch import receiver
 class CustomerType(models.Model):
     name = models.CharField(max_length=255)
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class Customer(models.Model):
     name = models.CharField(max_length=255)
-    address = models.TextField()
-    contact = models.CharField(max_length=20)
+    address = models.TextField(null=True, blank=True)
+    contact = models.CharField(max_length=20, null=True, blank=True)
     customer_type = models.ForeignKey(
         CustomerType, on_delete=models.SET_NULL, null=True)
 
@@ -55,6 +58,9 @@ class Supply(models.Model):
 
     def get_current_sum(self, id=None):
         return Supply.objects.values('item').annotate(item__sum=Sum('quantity'))
+
+    def __str__(self) -> str:
+        return f"Supplied {self.quantity} x {self.item.name} at { self.supplied_at }"
 
 
 class Ingredient(models.Model):
@@ -101,17 +107,23 @@ class Production(models.Model):
     quantity = models.PositiveIntegerField()
     date = models.DateField()
 
+    def __str__(self) -> str:
+        return f"{self.product.name} + {self.quantity} + {self.date}"
+
 
 class Sales(models.Model):
     sales_type = models.CharField(max_length=255)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField()
-    freebies = models.IntegerField()
+    freebies = models.IntegerField(null=True, blank=True)
     customer = models.ForeignKey(
         Customer, on_delete=models.SET_NULL, null=True)
     date = models.DateField()
-    actual_sale = models.FloatField()
+    actual_sale = models.FloatField(null=True, blank=True)
     projected_sale = models.FloatField()
+
+    def __str__(self) -> str:
+        return f"sold {self.product.name} x {self.quantity} to {self.customer.name} at {self.date}"
 
 
 @receiver(pre_save, sender=Sales)
