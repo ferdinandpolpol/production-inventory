@@ -26,8 +26,8 @@ def index(request):
 def sales(request):
     context = {
         "sales": Sales.objects.all(),
-        'products': Product.objects.all(),
-        'customers': Customer.objects.all()
+        'products': Product.objects.all().order_by('name'),
+        'customers': Customer.objects.all().order_by('name')
     }
     return render(request, 'sales.html', context)
 
@@ -101,7 +101,7 @@ def production_api_totals(request):
 @api_view(['POST'])
 def sales_api(request):
     if request.method == "POST":
-        serializer = SalesSerializer(data=request.data)
+        serializer = SalesSerializer(data=request.data, many=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
@@ -130,13 +130,13 @@ def reports_api(request):
         production_supply_totals = ProductionIngredients.objects. \
             filter(production__date__range=[from_date, to_date]). \
             values('ingredient__name'). \
-            annotate(Sum('quantity'))
+            annotate(Sum('quantity')).filter(quantity__sum__gt=0)
         per_product_supply_totals = {}
         for product in Product.objects.all():
             per_product_supply_totals[product.name] = ProductionIngredients.objects. \
                 filter(production__date__range=[from_date, to_date], production__product=product). \
                 values('ingredient__name'). \
-                annotate(Sum('quantity'))
+                annotate(Sum('quantity')).filter(quantity__sum__gt=0)
         supply_inventory_list = Supply.objects.filter(supplied_at__range=[
                                                       from_date, to_date]).values("item__name", "quantity", "supplied_at").order_by("-supplied_at")
 
@@ -145,19 +145,21 @@ def reports_api(request):
         sales = Sales.objects.filter(date__range=[from_date, to_date])
 
         total_production_per_product = productions.values(
-            "product__name").annotate(Sum('quantity'))
+            "product__name").annotate(Sum('quantity')).filter(quantity__sum__gt=0)
         total_sales = sales.values(
-            "customer__name", "product__name").annotate(Sum('quantity'))
+            "customer__name", "product__name").annotate(Sum('quantity')).filter(quantity__sum__gt=0).order_by("product__name")
+        total_sales_per_product = sales.values("product__name").annotate(
+            Sum('quantity')).filter(quantity__sum__gt=0).order_by("product__name")
         total_freebies = sales.values(
-            "customer__name", "product__name").annotate(Sum('freebies'))
-        total_sales_per_product = sales.values(
-            "product__name").annotate(sum_out=Sum(F('quantity') + F('freebies')))
+            "customer__name", "product__name").annotate(Sum('freebies')).filter(freebies__sum__gt=0)
+        total_sales_per_product_incl_freebies = sales.values(
+            "product__name").annotate(sum_out=Sum(F('quantity') + F('freebies'))).filter(sum_out__gt=0)
 
         current_inventory = {
             product["product__name"]: product["quantity__sum"]
             for product in total_production_per_product
         }
-        for sales in total_sales_per_product:
+        for sales in total_sales_per_product_incl_freebies:
             key = sales["product__name"]
             current_inventory[key] = float(
                 current_inventory[key]) - float(sales["sum_out"])
@@ -169,6 +171,7 @@ def reports_api(request):
                 "per_product_supply_totals": per_product_supply_totals,
                 "total_production_per_product": total_production_per_product,
                 "total_sales": total_sales,
+                "total_sales_per_product": total_sales_per_product,
                 "total_freebies": total_freebies,
                 "current_inventory": current_inventory
             }, status=status.HTTP_200_OK)

@@ -56,7 +56,7 @@
                 <tbody>
                     <tr class="salesRow">
                         <td>
-                            <select id="customer" class="form-control">
+                            <select class="form-control customerSelect">
                                 <option value="none">
                                     ...
                                 </option>
@@ -68,13 +68,13 @@
                             </select>
                         </td>
                         <td>
-                            <input type="number" id="quantitySale" class="form-control" />
+                            <input type="number" class="form-control quantitySale" />
                         </td>
                         <td>
-                            <input type="number" id="quantityFreebies" class="form-control" />
+                            <input type="number" class="form-control quantityFreebies" />
                         </td>
                         <td>
-                            <input type="number" id="salesRevenue" class="form-control" />
+                            <input type="number" step=".01" class="form-control salesRevenue" />
                         </td>
                     </tr>
                     <tr>
@@ -96,7 +96,7 @@
             let newSalesRow = `
             <tr class="salesRow">
                 <td>
-                    <select id="customer" class="form-control">
+                    <select class="form-control customerSelect">
                         <option value="none">
                             ...
                         </option>
@@ -108,13 +108,13 @@
                     </select>
                 </td>
                 <td>
-                    <input type="number" id="quantitySale" class="form-control" />
+                    <input type="number" class="form-control quantitySale" />
                 </td>
                 <td>
-                    <input type="number" id="quantityFreebies" class="form-control" />
+                    <input type="number" class="form-control quantityFreebies" />
                 </td>
                 <td>
-                    <input type="number" id="salesRevenue" class="form-control" />
+                    <input type="number" step=".01" class="form-control salesRevenue" />
                 </td>
             </tr>
             `
@@ -122,18 +122,22 @@
         }
 
         $("#salesForm").on("submit", (e) => {
-            // each .salesRow, get all input data
             e.preventDefault()
 
-            let data = {
-                sales_type: String($("#salesType").val()),
-                product: String($("#productSale").find(":selected").val()),
-                customer: String($("#customer").find(":selected").val()),
-                quantity: String($("#quantitySale").val()),
-                freebies: String($("#quantityFreebies").val()) || 0,
-                actual_sale: String($("#salesRevenue").val()) || 0,
-                date: String($("#salesDate").val()),
-            }
+            let data = []
+
+            $(".salesRow").each((index, item) => {
+                // each row get all input data
+                data.push({
+                    sales_type: String($("#salesType").val()),
+                    product: String($("#productSale").find(":selected").val()),
+                    customer: String($(item).find(".customerSelect").find(":selected").val()),
+                    quantity: String($(item).find(".quantitySale").val()),
+                    freebies: String($(item).find(".quantityFreebies").val()) || 0,
+                    actual_sale: String($(item).find(".salesRevenue").val()) || 0,
+                    date: String($("#salesDate").val()),
+                })
+            })
 
             request("POST", "/api/sales/", data, (res) => {
                 alert("Successfully created sale entry.")
