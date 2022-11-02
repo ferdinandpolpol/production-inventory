@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block header %}
+    Sales Record
+{% endblock header %}
 {% block content %}
     <div class="form mt-5 p-5 border border-2">
         <form id="salesForm">
@@ -141,6 +144,7 @@
 
             request("POST", "/api/sales/", data, (res) => {
                 alert("Successfully created sale entry.")
+                $("#productSale").find(":selected").val(null)
             })
         })
 

@@ -25,6 +25,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('sales/', views.sales, name='sales'),
     path('supply/', views.supply, name='supply'),
+    # path('purchase/', views.reports, name='reports'),
     path('reports/', views.reports, name='reports'),
 
     # APIs

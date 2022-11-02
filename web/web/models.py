@@ -1,4 +1,5 @@
 
+from unittest.util import _MAX_LENGTH
 from django.db import models
 from django.db.models import F, Sum
 from django.db.models.signals import pre_save
@@ -55,6 +56,8 @@ class Supply(models.Model):
     item = models.ForeignKey(SupplyItem, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField()
     supplied_at = models.DateField()
+    purchase_order = models.ForeignKey(
+        "Purchase", on_delete=models.SET_NULL, null=True, blank=True)
 
     def get_current_sum(self, id=None):
         return Supply.objects.values('item').annotate(item__sum=Sum('quantity'))
@@ -91,10 +94,13 @@ class Recipe(models.Model):
 
 class ProductionIngredients(models.Model):
     production = models.ForeignKey(
-        'Production', related_name="ingredients", on_delete=models.SET_NULL, null=True)
+        'Production', related_name="ingredients", on_delete=models.CASCADE, null=True)
     ingredient = models.ForeignKey(
         SupplyItem, on_delete=models.SET_NULL, null=True)
     quantity = models.FloatField()
+
+    def __str__(self) -> str:
+        return f"{ self.production.id } - { self.ingredient.name } - { self.quantity }"
 
 
 class Production(models.Model):
@@ -129,3 +135,19 @@ class Sales(models.Model):
 @receiver(pre_save, sender=Sales)
 def generate_projected_sale(sender, instance, **kwargs):
     instance.projected_sale = instance.product.price * instance.quantity
+
+
+class Supplier(models.Model):
+    name = models.CharField(max_length=255)
+
+
+class Purchase(models.Model):
+    PURCHASE_TYPES = (
+        ("SUPPLY", "Supply"),
+    )
+    type = models.CharField(max_length=255, choices=PURCHASE_TYPES)
+    amount = models.FloatField()
+    supplier = models.ForeignKey(
+        Supplier, on_delete=models.SET_NULL, null=True)
+    notes = models.TextField(null=True, blank=True)
+    date = models.DateField()
