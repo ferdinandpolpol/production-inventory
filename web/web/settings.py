@@ -32,7 +32,6 @@ CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
 
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -73,6 +72,7 @@ TEMPLATES = [
     },
 ]
 
+LOGIN_URL = "/login/"
 WSGI_APPLICATION = 'web.wsgi.application'
 
 
@@ -89,7 +89,6 @@ DATABASES = {
         'PORT': 5432,
     }
 }
-
 
 
 # Password validation
@@ -134,3 +133,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}

@@ -6,8 +6,6 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
 
-# ProductionIngredients.objects.filter(production__in=[12,13]).values('ingredient__name').annotate(Sum('quantity'))
-
 class CustomerType(models.Model):
     name = models.CharField(max_length=255)
 
@@ -57,13 +55,17 @@ class Supply(models.Model):
     quantity = models.IntegerField()
     supplied_at = models.DateField()
     purchase_order = models.ForeignKey(
-        "Purchase", on_delete=models.SET_NULL, null=True, blank=True)
+        "Purchase", on_delete=models.SET_NULL, related_name="supplies", null=True, blank=True)
 
     def get_current_sum(self, id=None):
         return Supply.objects.values('item').annotate(item__sum=Sum('quantity'))
 
     def __str__(self) -> str:
-        return f"Supplied {self.quantity} x {self.item.name} at { self.supplied_at }"
+        purchase_str = ""
+
+        if self.purchase_order:
+            purchase_str = f"PO { self.purchase_order.id } - { self.purchase_order.date }"
+        return f"Supplied {self.quantity} x {self.item.name} at { self.supplied_at } --- { purchase_str }"
 
 
 class Ingredient(models.Model):
@@ -144,6 +146,7 @@ class Supplier(models.Model):
 class Purchase(models.Model):
     PURCHASE_TYPES = (
         ("SUPPLY", "Supply"),
+        ("OTHERS", "Others")
     )
     type = models.CharField(max_length=255, choices=PURCHASE_TYPES)
     amount = models.FloatField()
@@ -151,3 +154,6 @@ class Purchase(models.Model):
         Supplier, on_delete=models.SET_NULL, null=True)
     notes = models.TextField(null=True, blank=True)
     date = models.DateField()
+
+    def __str__(self) -> str:
+        return f"{ self.supplier } - { self.notes }"
