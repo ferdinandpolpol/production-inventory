@@ -1,32 +1,35 @@
 {% extends "base.html" %}
+{% block header %}
+Supply Record
+{% endblock header %}
 {% block content %}
-    <div class="form mt-5 p-5 border border-2">
-        <form id="salesForm">
-            <div class="form-group">
-                <label for="itemSupply">Item</label>
-                <select id="itemSupply" class="form-control">
-                    <option value="none">
-                        ...
-                    </option>
-                    {% for item in supply_items %}
-                        <option value="{{ item.id }}">
-                            {{ item.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="quantitySupply">Quantity IN</label>
-                <input type="number" id="quantitySupply" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label for="supplyDate">Date</label>
-                <input type="date" id="supplyDate" class="form-control" />
-            </div>
-            <button type="submit" class="btn btn-primary mb-2">Submit</button>
-        </form>
-    </div>
-    <script>$("#salesForm").on("submit", (e) => {
+<div class="form mt-5 p-5 border border-2">
+    <form id="salesForm">
+        <div class="form-group">
+            <label for="itemSupply">Item</label>
+            <select id="itemSupply" class="form-control">
+                <option value="none">
+                    ...
+                </option>
+                {% for item in supply_items %}
+                <option value="{{ item.id }}">
+                    {{ item.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="quantitySupply">Quantity IN</label>
+            <input type="number" id="quantitySupply" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="supplyDate">Date</label>
+            <input type="date" id="supplyDate" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary mb-2">Submit</button>
+    </form>
+</div>
+<script>$("#salesForm").on("submit", (e) => {
         e.preventDefault()
 
         let data = {
@@ -38,7 +41,7 @@
         request("POST", "/api/supply/", data, (res) => {
             alert("Successfully created supply entry.")
         })
-        })
+    })
 
-    </script>
+</script>
 {% endblock content %}

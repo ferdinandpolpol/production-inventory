@@ -55,7 +55,7 @@ class Supply(models.Model):
     quantity = models.IntegerField()
     supplied_at = models.DateField()
     purchase_order = models.ForeignKey(
-        "Purchase", on_delete=models.SET_NULL, related_name="supplies", null=True, blank=True)
+        "Purchase", on_delete=models.CASCADE, related_name="supplies", null=True, blank=True)
 
     def get_current_sum(self, id=None):
         return Supply.objects.values('item').annotate(item__sum=Sum('quantity'))
