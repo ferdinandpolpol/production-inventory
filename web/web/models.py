@@ -50,6 +50,7 @@ class SupplyItem(models.Model):
 class Supply(models.Model):
     class Meta:
         verbose_name_plural = 'Supplies'
+        unique_together = ("item", "supplied_at")
 
     item = models.ForeignKey(SupplyItem, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField()
@@ -107,6 +108,7 @@ class ProductionIngredients(models.Model):
 
 class Production(models.Model):
     """ This also acts as the inventory """
+
     class Meta:
         # Unique together since we want production info for each product per day only
         unique_together = ("product", "date")
@@ -127,8 +129,8 @@ class Sales(models.Model):
     customer = models.ForeignKey(
         Customer, on_delete=models.SET_NULL, null=True)
     date = models.DateField()
-    actual_sale = models.FloatField(null=True, blank=True)
-    projected_sale = models.FloatField()
+    actual_sale = models.FloatField(null=True, blank=True, help_text="Actual sale input by user")
+    projected_sale = models.FloatField(help_text="Projected sale is the sale calculated by the system")
 
     def __str__(self) -> str:
         return f"sold {self.product.name} x {self.quantity} to {self.customer.name} at {self.date}"
