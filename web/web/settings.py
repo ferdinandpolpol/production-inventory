@@ -24,9 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-j@rtug2ed32m1-v&tze)+$%-zz#k72_r#gvoqd^1299-foah+4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", False)
 
 ALLOWED_HOSTS = ["*"]
+if DEBUG is False:
+    ALLOWED_HOSTS = ["sys.amorens.ph"]
+
 CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*', '*localhost*']
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
