@@ -38,9 +38,6 @@ Production
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
-
-
-<!-- 
 <div class="border border-2 p-5">
     <div class="form-inline">
         <label>Production Report from</label>
@@ -71,7 +68,7 @@ Production
         <tbody id="tableProductionListTotals">
         </tbody>
     </table>
-</div> -->
+</div>
 <script>
     // Instantiate when the document has loaded
     $(document).ready(function () {
@@ -102,11 +99,11 @@ Production
                     "quantity": String($(itm).find("input").val())
                 })
             })
-            // request("POST", `/api/production/`, data,
-            //     (res) => {
-            //         alert("Successfully created production data.")
-            //     }
-            // )
+            request("POST", `/api/production/`, data,
+                (res) => {
+                    alert("Successfully created production data.")
+                }
+            )
 
             console.log("Restes")
             document.querySelectorAll('input, select').forEach((input) => {
