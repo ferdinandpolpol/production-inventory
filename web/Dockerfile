@@ -7,5 +7,8 @@ WORKDIR /usr/src/app
 ADD requirements.txt /usr/src/app/
 
 RUN pip install -r requirements.txt
+RUN pip install uwsgi
 
 ADD . /usr/src/app/
+
+CMD ["uwsgi", "--ini", "uwsgi.ini"]
