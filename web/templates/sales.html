@@ -27,113 +27,119 @@ Sales Record
                     {% endfor %}
                 </select>
             </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary mt-3 form-inline">Finalize Sale</button>
+            </div>
         </div>
 
-        <table class="table table-striped mt-2">
-            <thead>
-                <tr>
-                    <th>Customer</th>
-                    <th>Amount Sold</th>
-                    <th>Freebies</th>
-                    <th>Sale</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="salesRow">
-                    <td>
-                        <select class="form-control form-conrol-lg customerSelect">
-                            <option value="none">
-                                ...
-                            </option>
-                            {% for customer in customers %}
-                            <option value="{{ customer.id }}">
-                                {{ customer.name }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </td>
-                    <td>
-                        <input type="number" class="form-control form-conrol-lg quantitySale" />
-                    </td>
-                    <td>
-                        <input type="number" class="form-control form-conrol-lg quantityFreebies" />
-                    </td>
-                    <td>
-                        <input type="number" step=".01" class="form-control form-conrol-lg salesRevenue" />
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="4">
-                        <button type="button" class="btn btn-secondary" onClick="addNewTableRow()">+</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <button type="submit" class="btn btn-primary mb-2">Submit Sale</button>
     </form>
+    <form id="addSalesForm" class="my-5">
+        <div class="row">
+            <label for="customerSelect">Customer</label>
+            <div class="col-md-12">
+                <select class="form-control form-control-lg customerSelect" required>
+                    <option value="none">Select Customer</option>
+                    {% for customer in customers %}
+                    <option value="{{ customer.id }}">
+                        {{ customer.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <label for="quantitySale">Quantity</label>
+            <div class="col-md-12">
+                <input type="number" class="form-control form-control-lg quantitySale" placeholder="Amount Sold"
+                    required />
+            </div>
+
+            <label for="quantityFreebies">Freebies</label>
+            <div class="col-md-12">
+                <input type="number" class="form-control form-control-lg quantityFreebies" placeholder="Freebies"
+                    required />
+            </div>
+
+            <label for="salesRevenue">Sales Revenue</label>
+            <div class="col-md-12">
+                <input type="number" step=".01" class="form-control form-control-lg salesRevenue" placeholder="Sale"
+                    required />
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Add Sale</button>
+    </form>
+
+    <table class="table table-striped mt-2">
+        <!-- existing table header structure -->
+        <tbody id="salesTableBody">
+            <!-- Existing rows will be populated here -->
+        </tbody>
+    </table>
+
 </div>
 <script>
-    function addNewTableRow() {
-        let newSalesRow = `
-            <tr class="salesRow">
-                <td>
-                    <select class="form-control form-conrol-lg customerSelect">
-                        <option value="none">
-                            ...
-                        </option>
-                        {% for customer in customers %}
-                            <option value="{{ customer.id }}">
-                                {{ customer.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </td>
-                <td>
-                    <input type="number" class="form-control form-conrol-lg quantitySale" />
-                </td>
-                <td>
-                    <input type="number" class="form-control form-conrol-lg quantityFreebies" />
-                </td>
-                <td>
-                    <input type="number" step=".01" class="form-control form-conrol-lg salesRevenue" />
-                </td>
-            </tr>
-            `
-        $(".salesRow").last().after(newSalesRow)
+    $("#addSalesForm").on("submit", function (e) {
+        e.preventDefault();
 
-        document.querySelectorAll('input[type=number]').forEach((input) => {
-            input.addEventListener("click", (e) => {
-                console.log("click number")
-                e.preventDefault()
+        // Retrieve form data
+        let customer = $(this).find(".customerSelect").find(":selected").text();
+        let customerID = $(this).find(".customerSelect").find(":selected").val();
+        let quantitySale = $(this).find(".quantitySale").val();
+        let quantityFreebies = $(this).find(".quantityFreebies").val();
+        let salesRevenue = $(this).find(".salesRevenue").val();
 
-                e.target.value = ''
-            })
-        })
-    }
+        // Clear form fields
+        $(this).trigger('reset');
 
-    $("#salesForm").on("submit", (e) => {
-        e.preventDefault()
+        // Add new sale record to table
+        let newRow = `
+    <tr class="salesRow">
+      <td>${customer}</td>
+      <td>${quantitySale}</td>
+      <td>${quantityFreebies}</td>
+      <td>PHP ${salesRevenue}</td>
+      <td style="display:none;">${customerID}</td>
+    </tr>`;
 
-        let data = []
+        $("#salesTableBody").append(newRow);
+    });
 
-        $(".salesRow").each((index, item) => {
-            // each row get all input data
+    $("#salesForm").on("submit", function (e) {
+        e.preventDefault();
+
+        let userConfirmed = confirm("This will finalize and submit the sale. Do you want to finalize and submit the sale?");
+
+        if (!userConfirmed) {
+            // user clicked "Cancel", so don't proceed with form submission.
+            return;
+        }
+        let data = [];
+
+        $("#salesTableBody").find('.salesRow').each(function () {
+            let row = $(this);
+            let customerID = row.find('td').eq(4).text(); // assuming customerID is hidden in the 5th cell of the row
+            let quantitySale = row.find('td').eq(1).text(); // gets the text from the 2nd cell of the row
+            let quantityFreebies = row.find('td').eq(2).text(); // gets the text from the 3rd cell of the row
+            let salesRevenueCell = row.find('td').eq(3).text(); // gets the text from the 4th cell of the row
+            let salesRevenue = salesRevenueCell.replace('PHP', '').trim(); // remove the "PHP" prefix and trim the remaining string
             data.push({
-                sales_type: String($("#salesType").val()),
-                product: String($("#productSale").find(":selected").val()),
-                customer: String($(item).find(".customerSelect").find(":selected").val()),
-                quantity: String($(item).find(".quantitySale").val()),
-                freebies: String($(item).find(".quantityFreebies").val()) || 0,
-                actual_sale: String($(item).find(".salesRevenue").val()) || 0,
-                date: String($("#salesDate").val()),
-            })
-        })
+                sales_type: $("#salesType").val(),
+                product: $("#productSale").find(":selected").val(),
+                customer: customerID,
+                quantity: quantitySale,
+                freebies: quantityFreebies || '0',
+                actual_sale: salesRevenue || '0',
+                date: $("#salesDate").val(),
+            });
+        });
 
+        // Now perform the request with the gathered data.
         request("POST", "/api/sales/", data, (res) => {
-            alert("Successfully created sale entry.")
-            $("#productSale").find(":selected").val(null)
-        })
-    })
+            alert("Successfully created sale entry.");
+            $("#productSale").val('none'); // reset product selection
+            $("#salesTableBody").empty(); // clear the table after successful submission
+        });
+    });
 
 </script>
 {% endblock content %}
