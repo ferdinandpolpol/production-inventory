@@ -14,15 +14,14 @@ Sales Record
                 <label for="salesType">Sales Type</label>
                 <input type="text" id="salesType" class="form-control" default="Sales" />
             </div>
-            <div class="col-12">
-                <label for="productSale">Product</label>
-                <select id="productSale" class="form-control">
-                    <option value="none">
-                        ...
-                    </option>
-                    {% for product in products %}
-                    <option value="{{ product.id }}">
-                        {{ product.name }}
+
+            <label for="customerSelect">Customer</label>
+            <div class="col-md-12">
+                <select id="customerSelectID" class="form-control form-control-lg customerSelect" required>
+                    <option value="none">Select Customer</option>
+                    {% for customer in customers %}
+                    <option value="{{ customer.id }}">
+                        {{ customer.name }}
                     </option>
                     {% endfor %}
                 </select>
@@ -36,13 +35,16 @@ Sales Record
     </form>
     <form id="addSalesForm" class="my-5">
         <div class="row">
-            <label for="customerSelect">Customer</label>
-            <div class="col-md-12">
-                <select class="form-control form-control-lg customerSelect" required>
-                    <option value="none">Select Customer</option>
-                    {% for customer in customers %}
-                    <option value="{{ customer.id }}">
-                        {{ customer.name }}
+
+            <div class="col-12">
+                <label for="productSale">Product</label>
+                <select id="productSale" class="form-control productSelect">
+                    <option value="none">
+                        ...
+                    </option>
+                    {% for product in products %}
+                    <option value="{{ product.id }}">
+                        {{ product.name }}
                     </option>
                     {% endfor %}
                 </select>
@@ -83,8 +85,8 @@ Sales Record
         e.preventDefault();
 
         // Retrieve form data
-        let customer = $(this).find(".customerSelect").find(":selected").text();
-        let customerID = $(this).find(".customerSelect").find(":selected").val();
+        let product = $(this).find(".productSelect").find(":selected").text();
+        let productID = $(this).find(".productSelect").find(":selected").val();
         let quantitySale = $(this).find(".quantitySale").val();
         let quantityFreebies = $(this).find(".quantityFreebies").val();
         let salesRevenue = $(this).find(".salesRevenue").val();
@@ -95,11 +97,11 @@ Sales Record
         // Add new sale record to table
         let newRow = `
     <tr class="salesRow">
-      <td>${customer}</td>
+      <td>${product}</td>
       <td>${quantitySale}</td>
       <td>${quantityFreebies}</td>
       <td>PHP ${salesRevenue}</td>
-      <td style="display:none;">${customerID}</td>
+      <td style="display:none;">${productID}</td>
     </tr>`;
 
         $("#salesTableBody").append(newRow);
@@ -118,15 +120,15 @@ Sales Record
 
         $("#salesTableBody").find('.salesRow').each(function () {
             let row = $(this);
-            let customerID = row.find('td').eq(4).text(); // assuming customerID is hidden in the 5th cell of the row
+            let productID = row.find('td').eq(4).text(); // assuming customerID is hidden in the 5th cell of the row
             let quantitySale = row.find('td').eq(1).text(); // gets the text from the 2nd cell of the row
             let quantityFreebies = row.find('td').eq(2).text(); // gets the text from the 3rd cell of the row
             let salesRevenueCell = row.find('td').eq(3).text(); // gets the text from the 4th cell of the row
             let salesRevenue = salesRevenueCell.replace('PHP', '').trim(); // remove the "PHP" prefix and trim the remaining string
             data.push({
                 sales_type: $("#salesType").val(),
-                product: $("#productSale").find(":selected").val(),
-                customer: customerID,
+                customer: $("#customerSelectID").find(":selected").val(),
+                product: productID,
                 quantity: quantitySale,
                 freebies: quantityFreebies || '0',
                 actual_sale: salesRevenue || '0',
@@ -143,7 +145,7 @@ Sales Record
     });
 
     $("#addSalesForm").hide();
-    $("#productSale").on("change", function () {
+    $(".customerSelect").on("change", function () {
         console.log("change")
         let selectedProduct = $(this).val();
 
