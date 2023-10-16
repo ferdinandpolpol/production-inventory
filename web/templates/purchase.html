@@ -57,7 +57,6 @@ Purchase Record
             </div>
         </div>
 
-
         <table class="table table-striped suppliesTable">
             <thead>
                 <tr>
@@ -66,20 +65,6 @@ Purchase Record
                 </tr>
             </thead>
             <tbody>
-                <tr class="suppliesRow">
-                    <td>
-                        <select class="form-control item-select">
-                            {% for supply in supplies %}
-                            <option value="{{ supply.id }}">
-                                {{ supply.name }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </td>
-                    <td>
-                        <input type="number" class="form-control quantitySale" />
-                    </td>
-                </tr>
                 <tr>
                     <td colspan="4">
                         <button type="button" class="btn btn-secondary" onClick="addNewSupplyTableRow()">+</button>
@@ -87,7 +72,7 @@ Purchase Record
                 </tr>
             </tbody>
         </table>
-        <button type="submit" class="btn btn-primary mb-2">Submit Sale</button>
+        <button type="submit" class="btn btn-primary mb-2">Submit Purchase Record</button>
     </form>
 </div>
 <script>
@@ -109,7 +94,7 @@ Purchase Record
         `
     function addNewSupplyTableRow() {
         let newSupplyRow = supplyRowHtml;
-        $(".suppliesRow").last().after(newSupplyRow)
+        $(".suppliesTable tbody").last().after(newSupplyRow)
     }
 
     $("#purchaseForm").on("submit", (e) => {
@@ -148,7 +133,6 @@ Purchase Record
 
             console.log("qwe", $("tr.suppliesRow"))
             $("tr.suppliesRow").remove()
-            $(".suppliesTable").find("tbody").html(supplyRowHtml)
         })
     })
 

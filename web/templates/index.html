@@ -13,17 +13,13 @@
 {% endblock styles %}
 <!-- -->
 {% block content %}
-<div class="row">
-    <div class="col" />
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <a href="/sales" class="card-link">Sales</a>
-                <a href="/production" class="card-link">Production</a>
-            </div>
-        </div>
-    </div>
-    <div class="col" />
+<ul>
+    <li><a href="/sales" class="card-link">Sales</a></li>
+    <li><a href="/production" class="card-link">Production</a></li>
+    <li><a href="/purchase" class="card-link">Purchase</a></li>
+    <li><a href="/supply" class="card-link">Supply</a></li>
+</ul>
 
-</div>
+
+
 {% endblock content %}

@@ -92,14 +92,15 @@ class SupplierSerializer(serializers.ModelSerializer):
 
 
 class PurchaseSerializer(serializers.ModelSerializer):
-    supplies = SupplySerializer(many=True)
+    # allow supplies to be null
+    supplies = SupplySerializer(many=True, required=False)
 
     class Meta:
         model = Purchase
         fields = ("__all__")
 
     def create(self, validated_data):
-        supplies = validated_data.pop("supplies")
+        supplies = validated_data.pop("supplies", [])
         purchase = Purchase.objects.create(**validated_data)
         for supply in supplies:
             Supply.objects.create(
