@@ -58,7 +58,7 @@ Sales Record
 
             <label for="quantityFreebies">Freebies</label>
             <div class="col-md-12">
-                <input type="number" class="form-control form-control-lg quantityFreebies" placeholder="Freebies"
+                <input type="number" class="form-control form-control-lg quantityFreebies" placeholder="Freebies" value=0
                     required />
             </div>
 
@@ -142,6 +142,8 @@ Sales Record
             $("#productSale").val('none'); // reset product selection
             $("#salesTableBody").empty(); // clear the table after successful submission
         });
+	
+	$("#salesDate").val('');
     });
 
     $("#addSalesForm").hide();
@@ -157,5 +159,7 @@ Sales Record
             $("#addSalesForm").hide();
         }
     });
+	
+    $("#salesDate").val('');
 </script>
 {% endblock content %}
