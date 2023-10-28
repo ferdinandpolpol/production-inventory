@@ -17,12 +17,11 @@ class RecipeAdmin(admin.ModelAdmin):
     inlines = [
         IngredientInline,
     ]
-
     
 class SupplierAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Supplier._meta.get_fields()]
-class PurchaseAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in Purchase._meta.get_fields()]
+
+
 
 class SalesAdmin(admin.ModelAdmin):
     list_display = ['customer', 'product', 'actual_sale', 'date']
@@ -31,6 +30,22 @@ class SalesAdmin(admin.ModelAdmin):
     # date should be datepicker
     list_filter = ['customer', 'product', ('date', DateRangeFilter)]
 
+class SupplyAdmin(admin.ModelAdmin):
+    list_display = ['item', 'quantity', 'supplied_at']
+    list_filter = ['item', ('supplied_at', DateRangeFilter)]
+
+class SupplyInline(admin.TabularInline):
+    model = Supply
+
+
+
+class PurchaseAdmin(admin.ModelAdmin):
+    list_display = ['supplier', 'notes', 'amount', 'date']
+
+    list_filter = ['supplier', ('date', DateRangeFilter)]
+    inlines = [ 
+        SupplyInline,
+    ]
     
 
 
