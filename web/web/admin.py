@@ -25,7 +25,7 @@ class SupplierAdmin(admin.ModelAdmin):
 
 
 class SalesAdmin(admin.ModelAdmin):
-    list_display = ['customer', 'product', 'actual_sale', 'date']
+    list_display = ['customer', 'sales_type','product', 'actual_sale', 'date']
 
     # add filter sidebar for customer and product and date
     # date should be datepicker

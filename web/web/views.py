@@ -195,6 +195,7 @@ def reports_api(request):
             filter(production__date__range=[from_date, to_date]). \
             values('ingredient__name'). \
             annotate(Sum('quantity')).filter(quantity__sum__gt=0)
+        
         per_product_supply_totals = {}
         for product in Product.objects.all():
             per_product_supply_totals[product.name] = ProductionIngredients.objects. \
@@ -226,11 +227,15 @@ def reports_api(request):
             for product in total_production_per_product
         }
         for sales in total_sales_per_product_incl_freebies:
-            key = sales["product__name"]
-            if key not in current_inventory:
+            _product_name = sales["product__name"]
+            if _product_name not in current_inventory:
                 continue
-            current_inventory[key] = float(
-                current_inventory[key]) - float(sales["sum_out"])
+            
+            total_quantity_of_product = float(current_inventory[_product_name])
+            total_sold_of_product = float(sales["sum_out"])
+
+            current_inventory[_product_name] = total_quantity_of_product - total_sold_of_product
+
 
         return Response(
             {
