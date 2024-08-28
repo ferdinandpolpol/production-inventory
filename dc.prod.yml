@@ -7,7 +7,7 @@ services:
     restart: always
     volumes:
       - web-static:/static
-      - ./web:/usr/src/app
+      - backend:/usr/src/app
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
