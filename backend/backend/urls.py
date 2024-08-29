@@ -24,6 +24,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from rest_framework import routers
+from rest_framework_swagger.views import get_swagger_view
 
 
 from . import views, viewsets
@@ -33,7 +34,9 @@ router.register(r'production', viewsets.ProductionViewSet)
 router.register(r'purchase', viewsets.PurchaseViewSet)
 router.register(r'sales', viewsets.SalesViewSet)
 router.register(r'supply', viewsets.SupplyViewSet)
+router.register(r'product', viewsets.ProductViewSet)
 
+schema_view = get_swagger_view(title="Amoren's API")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -48,5 +51,7 @@ urlpatterns = [
 
     # Other APIs
     path('api/reports/', views.reports_api),
-    path('api/product/<int:product_id>', views.get_product),
+
+    # Swagger
+    path('api/docs/', schema_view)
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

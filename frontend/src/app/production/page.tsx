@@ -1,10 +1,17 @@
-const ProductionPage = () => {
+import { ProductionForm } from './components/productionForm'
+
+
+export default function ProductionPage() {
+  // await fetch()
+
+  
+
+
   return (
     <div>
-      <h1>Production Page</h1>
-      {/* Add content related to the Production page */}
-    </div>
-  );
-};
+      <ProductionForm />
 
-export default ProductionPage;
+      
+    </div>
+  )
+}
