@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0010_sales_date'),
+        ('backend', '0010_sales_date'),
     ]
 
     operations = [

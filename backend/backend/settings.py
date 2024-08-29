@@ -46,14 +46,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'web',
+    'backend',
     'rangefilter',
     'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -61,7 +63,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'web.urls'
+ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
     {
@@ -80,7 +82,7 @@ TEMPLATES = [
 ]
 
 LOGIN_URL = "/login/"
-WSGI_APPLICATION = 'web.wsgi.application'
+WSGI_APPLICATION = 'backend.wsgi.application'
 
 
 # Database
@@ -153,3 +155,8 @@ REST_FRAMEWORK = {
 
 STATIC_URL='/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://*.amorens.ph",
+]

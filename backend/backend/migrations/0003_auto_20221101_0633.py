@@ -9,7 +9,7 @@ from django.utils.timezone import utc
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0002_alter_recipe_quantity'),
+        ('backend', '0002_alter_recipe_quantity'),
     ]
 
     operations = [
@@ -32,8 +32,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('quantity', models.FloatField()),
-                ('ingredient', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.supplyitem')),
-                ('production', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.production')),
+                ('ingredient', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='backend.supplyitem')),
+                ('production', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='backend.production')),
             ],
         ),
     ]

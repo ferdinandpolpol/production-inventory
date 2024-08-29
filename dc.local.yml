@@ -10,7 +10,7 @@ services:
       - web-static:/usr/src/app/static
       - ./backend:/usr/src/app
     env_file: .env
-    command: python manage.py runserver 0.0.0.0:8000
+    command: /usr/src/app/local-entrypoint.sh
     ports:
       - 8000:8000
     environment:
@@ -20,20 +20,29 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       DEBUG: 'True'
-  
+    depends_on:
+      db:
+        condition: service_healthy
+
   frontend:
     restart: always
     build:
       context: ./frontend
       dockerfile: ./Dockerfile
     volumes:
-      - ./frontend:/usr/src/app
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
     ports:
       - 3000:3000
     environment:
-      REACT_APP_API_URL: http://backend:8000/api
-      NEXT_PUBLIC_API_URL: http://backend:8000/api
+      REACT_APP_API_URL: http://localhost:8000/api
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api
       CHOKIDAR_USEPOLLING: 'true'
+    command: npm run dev
+    depends_on:
+      backend:
+        condition: service_started
     
   db:
     image: postgres
@@ -41,6 +50,11 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     env_file: .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 
 volumes:

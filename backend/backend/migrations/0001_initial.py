@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('quantity', models.IntegerField()),
                 ('supplied_at', models.DateTimeField()),
-                ('item', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.supplyitem')),
+                ('item', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='backend.supplyitem')),
             ],
         ),
         migrations.CreateModel(
@@ -61,8 +61,8 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('sales_type', models.CharField(max_length=255)),
                 ('quantity', models.IntegerField()),
-                ('customer', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.customer')),
-                ('product', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.product')),
+                ('customer', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='backend.customer')),
+                ('product', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='backend.product')),
             ],
         ),
         migrations.CreateModel(
@@ -70,8 +70,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('quantity', models.PositiveIntegerField()),
-                ('ingredient', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.supplyitem')),
-                ('product', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.product')),
+                ('ingredient', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='backend.supplyitem')),
+                ('product', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='backend.product')),
             ],
         ),
         migrations.CreateModel(
@@ -79,12 +79,12 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('quantity', models.PositiveIntegerField()),
-                ('product', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.product')),
+                ('product', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='backend.product')),
             ],
         ),
         migrations.AddField(
             model_name='customer',
             name='customer_type',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.customertype'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='backend.customertype'),
         ),
     ]

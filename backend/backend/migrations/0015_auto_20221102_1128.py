@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0014_alter_productioningredients_production'),
+        ('backend', '0014_alter_productioningredients_production'),
     ]
 
     operations = [
@@ -26,12 +26,12 @@ class Migration(migrations.Migration):
                 ('amount', models.FloatField()),
                 ('notes', models.TextField(blank=True, null=True)),
                 ('date', models.DateField()),
-                ('supplier', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.supplier')),
+                ('supplier', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='backend.supplier')),
             ],
         ),
         migrations.AddField(
             model_name='supply',
             name='purchase_order',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.purchase'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='backend.purchase'),
         ),
     ]
