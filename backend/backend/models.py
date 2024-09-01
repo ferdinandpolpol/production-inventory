@@ -50,7 +50,6 @@ class SupplyItem(models.Model):
 class Supply(models.Model):
     class Meta:
         verbose_name_plural = 'Supplies'
-        unique_together = ("item", "supplied_at")
 
     item = models.ForeignKey(SupplyItem, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField()
@@ -122,10 +121,6 @@ class Production(models.Model):
 
 
 class Sales(models.Model):
-
-    class Meta:
-        unique_together = ("product", "date", "customer")
-
     sales_type = models.CharField(max_length=255)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField()

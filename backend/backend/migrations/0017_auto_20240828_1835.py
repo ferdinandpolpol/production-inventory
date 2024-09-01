@@ -19,13 +19,5 @@ class Migration(migrations.Migration):
             model_name='sales',
             name='projected_sale',
             field=models.FloatField(help_text='Projected sale is the sale calculated by the system'),
-        ),
-        migrations.AlterUniqueTogether(
-            name='sales',
-            unique_together={('product', 'date', 'customer')},
-        ),
-        migrations.AlterUniqueTogether(
-            name='supply',
-            unique_together={('item', 'supplied_at')},
-        ),
+        )
     ]
