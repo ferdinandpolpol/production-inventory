@@ -50,7 +50,7 @@ class PurchaseAdmin(admin.ModelAdmin):
 class ProductionAdmin(admin.ModelAdmin):
     list_display = ["product", "quantity", "date"]
 
-    list_filter = ["product", ("date", DateRangeFilter)]
+    list_filter = ["product", "quantity", ("date", DateRangeFilter)]
     
 
 
