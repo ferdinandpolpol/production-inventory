@@ -13,41 +13,82 @@
                class="form-control report-date-input mx-2"/>
     </div>
     <div class="form-group mt-5">
-        <h3>Supply IN</h3>
+        <h4>Supply IN</h4>
         <table class="table table-striped">
-            <thead>
+            <thead class="thead-dark">
                 <tr>
-                    <td>Supply Item</td>
-                    <td>Quantity</td>
-                    <td>Date IN</td>
+                    <th>Supply Item</th>
+                    <th>Quantity</th>
+                    <th>Date IN</th>
                 </tr>
-            </thead>
+            </thead class="thead-dark">
             <tbody id="supplyList">
             </tbody>
         </table>
-        <h3>Total Supplies used</h3>
+        <h4>Total Supplies used</h4>
         <table class="table table-striped">
-            <thead>
+            <thead class="thead-dark">
                 <tr>
-                    <td>Supply Item</td>
-                    <td>Total</td>
+                    <th>Supply Item</th>
+                    <th>Total</th>
                 </tr>
-            </thead>
+            </thead class="thead-dark">
             <tbody id="supplyTotals">
             </tbody>
         </table>
     </div>
     <div id="perProductSupplyTotals"></div>
     <div>
-        <h3>Total Production Per Product</h3>
+        <h4>Total Production Per Product</h4>
         <table class="table table-striped">
-            <thead>
+            <thead class="thead-dark">
                 <tr>
-                    <td>Product</td>
-                    <td>Total Quantity</td>
+                    <th>Product</th>
+                    <th>Total Quantity</th>
                 </tr>
-            </thead>
+            </thead class="thead-dark">
             <tbody id="totalPerProduct">
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <h4>Total Sales (Customer, Product)</h4>
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Total Quantity</th>
+                </tr>
+            </thead class="thead-dark">
+            <tbody id="totalSalesPerProduct">
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <h4>Total Freebies</h4>
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Total Quantity</th>
+                </tr>
+            </thead class="thead-dark">
+            <tbody id="totalFreebiesPerProduct">
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <h4>Current Inventory</h4>
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Product</th>
+                    <th>Total Quantity</th>
+                </tr>
+            </thead class="thead-dark">
+            <tbody id="currentInventory">
             </tbody>
         </table>
     </div>
@@ -81,14 +122,14 @@
                     })
 
                     perProductSupplyTotalsHTML += `
-                    <h3>Total Supply used for ${ product }</h3>
+                    <h4>Total Supply used for ${ product }</h4>
                     <table class='table table-striped'>
-                        <thead>
+                        <thead class="thead-dark">
                             <tr>
                                 <td>Supply Item</td>
                                 <td>Total Quantity</td>
                             </tr>
-                        </thead>
+                        </thead class="thead-dark">
                         <tbody>${ tmp }</tbody>
                     </table>
                     `
@@ -117,6 +158,41 @@
                     </tr>`
                 })
                 $("#totalPerProduct").html(totalPerProductHTML)
+
+                // Total Sales Per Product
+                let totalSalesPerProductHTML = ""
+                res.total_sales.map((product) => {
+                    totalSalesPerProductHTML += `
+                    <tr>
+                        <td>${ product.customer__name }</td>
+                        <td>${ product.product__name }</td>
+                        <td>${ product.quantity__sum }</td>
+                    </tr>`
+                })
+                $("#totalSalesPerProduct").html(totalSalesPerProductHTML)
+
+                // Total Freebies Per Product
+                let totalFreebiesPerProductHTML = ""
+                res.total_freebies.map((product) => {
+                    totalFreebiesPerProductHTML += `
+                    <tr>
+                        <td>${ product.customer__name }</td>
+                        <td>${ product.product__name }</td>
+                        <td>${ product.freebies__sum }</td>
+                    </tr>`
+                })
+                $("#totalFreebiesPerProduct").html(totalFreebiesPerProductHTML)
+                
+                // Current Inventory
+                let currentInventoryHTML = ""
+                for (let product of Object.keys(res.current_inventory)) {
+                    currentInventoryHTML += `
+                    <tr>
+                        <td>${ product }</td>
+                        <td>${ res.current_inventory[product] }</td>
+                    </tr>`
+                }
+                $("#currentInventory").html(currentInventoryHTML)
             })
         }
 
