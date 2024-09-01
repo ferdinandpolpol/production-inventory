@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0003_auto_20221101_0633'),
+        ('backend', '0003_auto_20221101_0633'),
     ]
 
     operations = [
@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='product',
             name='recipe',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.recipe'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='backend.recipe'),
         ),
         migrations.AddField(
             model_name='recipe',
@@ -39,8 +39,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('quantity', models.FloatField(help_text='Quantity of the ingredient used')),
-                ('ingredient', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.supplyitem')),
-                ('recipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.recipe')),
+                ('ingredient', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='backend.supplyitem')),
+                ('recipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='backend.recipe')),
             ],
         ),
     ]

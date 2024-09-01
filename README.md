@@ -47,6 +47,15 @@ Previously run in a Lightsail DB, but now running as a container in the same EC2
 ( Yeah I know this could potentially be an issue if the instance goes down then everything is down. )
 
 
+### Dev Notes
+This is mostly basic CRUD app which involves mostly data-entry
+
+The only real unique thing here is how the production works. For a product there is always a main ingredient,
+and based off that main ingredient is how the quantity of other ingredients will be used and will automatically be calculated.
+
+This data is stored in the database where the recipe and ingredients of products are constant.
+
+
 <!-- ROADMAP -->
 ## Roadmap
 

@@ -7,13 +7,13 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0013_auto_20221102_0512'),
+        ('backend', '0013_auto_20221102_0512'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='productioningredients',
             name='production',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='ingredients', to='web.production'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='ingredients', to='backend.production'),
         ),
     ]
