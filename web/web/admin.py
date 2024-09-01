@@ -1,5 +1,6 @@
 from django.contrib import admin
 from rangefilter.filter import DateRangeFilter
+from admin_numeric_filter.admin import SingleNumericFilter
 
 from .models import (
     CustomerType, Customer, Ingredient, Product, ProductionIngredients,
@@ -50,7 +51,7 @@ class PurchaseAdmin(admin.ModelAdmin):
 class ProductionAdmin(admin.ModelAdmin):
     list_display = ["product", "quantity", "date"]
 
-    list_filter = ["product", "quantity", ("date", DateRangeFilter)]
+    list_filter = ["product", ("quantity", SingleNumericFilter), ("date", DateRangeFilter)]
     
 
 
