@@ -148,6 +148,9 @@ def generate_projected_sale(sender, instance, **kwargs):
 class Supplier(models.Model):
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+
 
 class Purchase(models.Model):
     PURCHASE_TYPES = (
@@ -163,3 +166,6 @@ class Purchase(models.Model):
 
     def __str__(self) -> str:
         return f"{ self.supplier } - { self.notes }"
+
+    def supplies(self):
+        return self.supplies_set.all()
