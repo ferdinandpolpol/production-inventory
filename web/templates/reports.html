@@ -66,19 +66,6 @@
         </table>
     </div>
     <div>
-        <h4>Total Sales/Product</h4>
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Product</th>
-                    <th>Total Quantity</th>
-                </tr>
-            </thead class="thead-dark">
-            <tbody id="totalSalesPerProduct">
-            </tbody>
-        </table>
-    </div>
-    <div>
         <h4>Total Freebies</h4>
         <table class="table table-striped">
             <thead class="thead-dark">
@@ -98,12 +85,47 @@
             <thead class="thead-dark">
                 <tr>
                     <th>Product</th>
-                    <th>
-                        Total Quantity
-                    </th>
+                    <th>Total Quantity</th>
                 </tr>
             </thead class="thead-dark">
             <tbody id="currentInventory">
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <h4>Total Sales/Product</h4>
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Product</th>
+                    <th>
+                        Total Quantity
+                    </th>
+                    <th>
+                        Total Sales (PHP)
+                    </th>
+                </tr>
+            </thead class="thead-dark">
+            <tbody id="totalSalesPerProduct">
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <h4>
+            Total Sacks used per product
+        </h4>
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>
+                        Product
+                    </th>
+                    <th>
+                        Sacks Used
+                    </th>
+                </tr>
+            </thead class="thead-dark">
+            <tbody id="totalSacksPerProduct">
             </tbody>
         </table>
     </div>
@@ -175,7 +197,7 @@
                 $("#totalPerProduct").html(totalPerProductHTML)
 
                 // Total Sales
-                let totalSalesHTML = ""
+                /**let totalSalesHTML = ""
                 res.total_sales.map((product) => {
                     totalSalesHTML += `
                     <tr>
@@ -184,17 +206,27 @@
                         <td>${ product.quantity__sum }</td>
                     </tr>`
                 })
-                $("#totalSales").html(totalSalesHTML)
+                $("#totalSales").html(totalSalesHTML)*/
 
                 // Total Sales p prod
                 let totalSalesPerProductHTML = ""
+                let totalProjectedSale = 0
                 res.total_sales_per_product.map((product) => {
                     totalSalesPerProductHTML += `
                     <tr>
                         <td>${ product.product__name }</td>
                         <td>${ product.quantity__sum }</td>
+                        <td>PHP ${ product.projected_sale__sum.toLocaleString('en-US', {maximumFractionDigits:2}) }</td>
                     </tr>`
+                    console.log(totalProjectedSale)
+                    totalProjectedSale += Number(product.projected_sale__sum)
                 })
+                totalSalesPerProductHTML += `
+                <tr>
+                    <td> </td>
+                    <td>Total Sales</td>
+                    <td>PHP ${ totalProjectedSale.toLocaleString('en-US', {maximumFractionDigits:2}) }</td>
+                </tr>`
                 $("#totalSalesPerProduct").html(totalSalesPerProductHTML)
 
                 // Total Freebies Per Product
@@ -219,6 +251,23 @@
                     </tr>`
                 }
                 $("#currentInventory").html(currentInventoryHTML)
+                
+                let totalSacksPerProductHTML = ""
+                let totalSackCount = 0
+                res.total_flour.map((product) => {
+                    totalSacksPerProductHTML += `
+                    <tr>
+                        <td>${ product.production__product__name }</td>
+                        <td>${ product.quantity__sum }</td>
+                    </tr>`
+                    totalSackCount += Number(product.quantity__sum)
+                })
+                totalSacksPerProductHTML += 
+                `<tr>
+                    <td>Total Sacks:</td>
+                    <td>${ totalSackCount }</td>
+                </tr>`
+                $("#totalSacksPerProduct").html(totalSacksPerProductHTML)
             })
         }
 
