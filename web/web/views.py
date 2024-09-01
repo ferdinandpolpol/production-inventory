@@ -1,7 +1,9 @@
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.viewsets import ModelViewSet
+
 
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -13,12 +15,6 @@ from django.contrib.auth.decorators import login_required
 
 from .serializers import (
     ProductSerializer,
-    ProductionListSerializer,
-    ProductionSerializer,
-    PurchaseSerializer,
-    RecipeSerializer,
-    SalesSerializer,
-    SupplySerializer,
 )
 
 from .models import (
@@ -67,7 +63,6 @@ def logout(request):
 
 @login_required
 def production(request):
-    """Front page to show everything"""
     context = {"products": Product.objects.all()}
 
     return render(request, "production.html", context)
@@ -115,90 +110,12 @@ def get_product(request, product_id):
 
     return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-@api_view(["GET", "POST"])
-def production_api(request, id=None):
-    if request.method == "GET":
-        from_date = request.query_params["from"]
-        to_date = request.query_params["to"]
-        instance = None
-        if id:
-            instance = Production.objects.get(id=id)
-        else:
-            instance = Production.objects.filter(date__range=[from_date, to_date])
-
-        serializer = ProductionListSerializer(instance=instance, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    if request.method == "POST":
-        kwargs = {"date": timezone.now().date()}
-
-        if request.data.get("date"):
-            kwargs.pop("date")
-
-        serializer = ProductionSerializer(data={**request.data, **kwargs})
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-@api_view(["GET"])
-def production_api_totals(request):
-    if request.method == "GET":
-        from_date = request.query_params["from"]
-        to_date = request.query_params["to"]
-        instance = Production.objects.filter(date__range=[from_date, to_date])
-
-        instance = instance.values("product__name").annotate(totals=Sum("quantity"))
-        return Response(instance, status=status.HTTP_200_OK)
-
-    return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-@api_view(["POST"])
-def sales_api(request):
-    if request.method == "POST":
-        serializer = SalesSerializer(data=request.data, many=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-@api_view(["POST"])
-def supply_api(request):
-    if request.method == "POST":
-        serializer = SupplySerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-@api_view(["POST"])
-def purchase_api(request):
-    if request.method == "POST":
-        serializer = PurchaseSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 @api_view(["GET"])
 def reports_api(request):
     if request.method == "GET":
         from_date = request.query_params["from"]
         to_date = request.query_params["to"]
+
         production_supply_totals = (
             ProductionIngredients.objects.filter(
                 production__date__range=[from_date, to_date]
