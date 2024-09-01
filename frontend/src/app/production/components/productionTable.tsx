@@ -26,8 +26,9 @@ interface ProductionResponse {
 }
   
 
-export const ProductionTable = async () => {
+export const ProductionTable = () => {
     const [productionData, setProductionData] = useState<Production[]>([]);
+
     useEffect(() => {
         async function getProductionData() {
             try {
@@ -37,7 +38,9 @@ export const ProductionTable = async () => {
                 console.error(error);
             }
         }
+        getProductionData();
     }, [])
+    console.log("productionData", productionData)
 
     return (
         <Table className="bg-slate-100 rounded max-h-80 overflow-y-auto relative">

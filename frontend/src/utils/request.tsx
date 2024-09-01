@@ -20,7 +20,7 @@ const refreshToken = async (token: string) => {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ refresh: refreshToken }),
+    body: JSON.stringify({ refresh: token }),
   });
 
   if (response.ok) {

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 
 export const LogOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -13,7 +13,7 @@ export const LogOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
 export const Navbar = () => {
   const [nav, setNav] = useState(false);
 
-  const links = [
+  const [links, setLinks] = useState([
     {
       id: 1,
       link: "production",
@@ -34,14 +34,23 @@ export const Navbar = () => {
       id: 5,
       link: "reports",
     },
-    // show this only if localStorage user is set
-    typeof window !== "undefined" && localStorage.user
-      ? {
-          id: 6,
-          link: "logout",
+  ]);
+
+  useEffect(() => {
+      const user = localStorage.getItem("user");
+      if (user) {
+        const parsedUser = JSON.parse(user);
+        if (parsedUser) {
+          setLinks([
+            ...links,
+            {
+              id: 6,
+              link: "logout",
+            },
+          ]);
         }
-      : { id: 0, link: "" },
-  ];
+      }
+  }, []);
 
   return (
     <div className="flex justify-between items-center w-full h-20 px-4 text-white bg-gray-100 fixed nav z-50">
