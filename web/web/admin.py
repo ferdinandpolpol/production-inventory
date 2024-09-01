@@ -16,6 +16,13 @@ class RecipeAdmin(admin.ModelAdmin):
         IngredientInline,
     ]
 
+    
+class SupplierAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Supplier._meta.get_fields()]
+class PurchaseAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Purchase._meta.get_fields()]
+
+
 
 admin.site.register(CustomerType)
 admin.site.register(Customer)
@@ -27,5 +34,5 @@ admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(ProductionIngredients)
 admin.site.register(Production)
 admin.site.register(Sales)
-admin.site.register(Purchase)
-admin.site.register(Supplier)
+admin.site.register(Purchase, PurchaseAdmin)
+admin.site.register(Supplier, SupplierAdmin)
