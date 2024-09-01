@@ -1,165 +1,159 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="form-inline">
-        <label>Production Report from</label>
-        <input type="date"
-               id="reportsFrom"
-               name="production-from"
-               class="form-control report-date-input mx-2"/>
-        <label>To</label>
-        <input type="date"
-               id="reportsTo"
-               name="production-to"
-               class="form-control report-date-input mx-2"/>
-    </div>
-    <div class="form-group mt-5">
-        <h4>Supply IN</h4>
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Supply Item</th>
-                    <th>Quantity</th>
-                    <th>Date IN</th>
-                </tr>
-            </thead class="thead-dark">
-            <tbody id="supplyList">
-            </tbody>
-        </table>
-        <h4>Total Supplies used</h4>
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Supply Item</th>
-                    <th>Total</th>
-                </tr>
-            </thead class="thead-dark">
-            <tbody id="supplyTotals">
-            </tbody>
-        </table>
-    </div>
-    <div id="perProductSupplyTotals"></div>
-    <div>
-        <h4>Total Production Per Product</h4>
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Product</th>
-                    <th>Total Quantity</th>
-                </tr>
-            </thead class="thead-dark">
-            <tbody id="totalPerProduct">
-            </tbody>
-        </table>
-    </div>
-    <div>
-        <h4>Total Sales (Customer, Product)</h4>
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Customer</th>
-                    <th>Product</th>
-                    <th>Total Quantity</th>
-                </tr>
-            </thead class="thead-dark">
-            <tbody id="totalSales">
-            </tbody>
-        </table>
-    </div>
-    <div>
-        <h4>Total Freebies</h4>
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Customer</th>
-                    <th>Product</th>
-                    <th>Total Quantity</th>
-                </tr>
-            </thead class="thead-dark">
-            <tbody id="totalFreebiesPerProduct">
-            </tbody>
-        </table>
-    </div>
-    <div>
-        <h4>Current Inventory</h4>
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Product</th>
-                    <th>Total Quantity</th>
-                </tr>
-            </thead class="thead-dark">
-            <tbody id="currentInventory">
-            </tbody>
-        </table>
-    </div>
-    <div>
-        <h4>Total Sales/Product</h4>
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Product</th>
-                    <th>
-                        Total Quantity
-                    </th>
-                    <th>
-                        Total Sales (PHP)
-                    </th>
-                </tr>
-            </thead class="thead-dark">
-            <tbody id="totalSalesPerProduct">
-            </tbody>
-        </table>
-    </div>
-    <div>
-        <h4>
-            Total Sacks used per product
-        </h4>
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>
-                        Product
-                    </th>
-                    <th>
-                        Sacks Used
-                    </th>
-                </tr>
-            </thead class="thead-dark">
-            <tbody id="totalSacksPerProduct">
-            </tbody>
-        </table>
-    </div>
-    <script>
-        function getReportsData (from, to) {
-            request("GET", `/api/reports/?from=${ from }&to=${ to }`, {}, (res) => {
-                
-                // TOTAL SUPPLIES USED 
-                let supplyTotalsHTML = ""
-                res.production_supply_totals.map((supply) => {
-                    supplyTotalsHTML += `
+<div class="form-inline">
+    <label>Production Report from</label>
+    <input type="date" id="reportsFrom" name="production-from" class="form-control report-date-input mx-2" />
+    <label>To</label>
+    <input type="date" id="reportsTo" name="production-to" class="form-control report-date-input mx-2" />
+</div>
+<div class="form-group mt-5">
+    <h4>Supply IN</h4>
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Supply Item</th>
+                <th>Quantity</th>
+                <th>Date IN</th>
+            </tr>
+        </thead class="thead-dark">
+        <tbody id="supplyList">
+        </tbody>
+    </table>
+    <h4>Total Supplies used</h4>
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Supply Item</th>
+                <th>Total</th>
+            </tr>
+        </thead class="thead-dark">
+        <tbody id="supplyTotals">
+        </tbody>
+    </table>
+</div>
+<div id="perProductSupplyTotals"></div>
+<div>
+    <h4>Total Production Per Product</h4>
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Product</th>
+                <th>Total Quantity</th>
+            </tr>
+        </thead class="thead-dark">
+        <tbody id="totalPerProduct">
+        </tbody>
+    </table>
+</div>
+<div>
+    <h4>Total Sales (Customer, Product)</h4>
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Customer</th>
+                <th>Product</th>
+                <th>Total Quantity</th>
+            </tr>
+        </thead class="thead-dark">
+        <tbody id="totalSales">
+        </tbody>
+    </table>
+</div>
+<div>
+    <h4>Total Freebies</h4>
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Customer</th>
+                <th>Product</th>
+                <th>Total Quantity</th>
+            </tr>
+        </thead class="thead-dark">
+        <tbody id="totalFreebiesPerProduct">
+        </tbody>
+    </table>
+</div>
+<div>
+    <h4>Current Inventory</h4>
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Product</th>
+                <th>Total Quantity</th>
+            </tr>
+        </thead class="thead-dark">
+        <tbody id="currentInventory">
+        </tbody>
+    </table>
+</div>
+<div>
+    <h4>Total Sales/Product</h4>
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Product</th>
+                <th>
+                    Total Quantity
+                </th>
+                <th>
+                    Total Sales (PHP)
+                </th>
+            </tr>
+        </thead class="thead-dark">
+        <tbody id="totalSalesPerProduct">
+        </tbody>
+    </table>
+</div>
+<div>
+    <h4>
+        Total Sacks used per product
+    </h4>
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>
+                    Product
+                </th>
+                <th>
+                    Sacks Used
+                </th>
+            </tr>
+        </thead class="thead-dark">
+        <tbody id="totalSacksPerProduct">
+        </tbody>
+    </table>
+</div>
+<script>
+    function getReportsData(from, to) {
+        request("GET", `/api/reports/?from=${from}&to=${to}`, {}, (res) => {
+
+            // TOTAL SUPPLIES USED 
+            let supplyTotalsHTML = ""
+            res.production_supply_totals.map((supply) => {
+                supplyTotalsHTML += `
                         <tr>
-                            <td>${ supply.ingredient__name }</td>
-                            <td>${ supply.quantity__sum }</td>
+                            <td>${supply.ingredient__name}</td>
+                            <td>${supply.quantity__sum}</td>
+                        </tr>
+                    `
+            })
+            $("#supplyTotals").html(supplyTotalsHTML)
+
+            // TOTAL SUPPLIES USED FOR EACH PRODUCT
+            let perProductSupplyTotalsHTML = ""
+            for (let product of Object.keys(res.per_product_supply_totals)) {
+                let tmp = ""
+                res.per_product_supply_totals[product].map((supply) => {
+                    tmp += `
+                        <tr>
+                            <td>${supply.ingredient__name}</td>
+                            <td>${supply.quantity__sum}</td>
                         </tr>
                     `
                 })
-                $("#supplyTotals").html(supplyTotalsHTML)
-                
-                // TOTAL SUPPLIES USED FOR EACH PRODUCT
-                let perProductSupplyTotalsHTML = ""
-                for (let product of Object.keys(res.per_product_supply_totals)) {
-                    let tmp = ""
-                    res.per_product_supply_totals[product].map((supply) => {
-                        tmp += `
-                        <tr>
-                            <td>${ supply.ingredient__name }</td>
-                            <td>${ supply.quantity__sum }</td>
-                        </tr>
-                    `
-                    })
 
-                    perProductSupplyTotalsHTML += `
-                    <h4>Total Supply used for ${ product }</h4>
+                perProductSupplyTotalsHTML += `
+                    <h4>Total Supply used for ${product}</h4>
                     <table class='table table-striped'>
                         <thead class="thead-dark">
                             <tr>
@@ -167,117 +161,117 @@
                                 <td>Total Quantity</td>
                             </tr>
                         </thead class="thead-dark">
-                        <tbody>${ tmp }</tbody>
+                        <tbody>${tmp}</tbody>
                     </table>
                     `
-                }
-                $("#perProductSupplyTotals").html(perProductSupplyTotalsHTML)
-                
-                // LIST OF ALL SUPPLY IN
-                let supplyListHTML = ""
-                res.supply_inventory_list.map((supply) => {
-                    supplyListHTML += `
-                    <tr>
-                        <td>${ supply.item__name }</td>
-                        <td>${ supply.quantity }</td>
-                        <td>${ supply.supplied_at }</td>
-                    </tr>`
-                })
-                $("#supplyList").html(supplyListHTML)
+            }
+            $("#perProductSupplyTotals").html(perProductSupplyTotalsHTML)
 
-                // Total Produced Per Product
-                let totalPerProductHTML = ""
-                res.total_production_per_product.map((product) => {
-                    totalPerProductHTML += `
+            // LIST OF ALL SUPPLY IN
+            let supplyListHTML = ""
+            res.supply_inventory_list.map((supply) => {
+                supplyListHTML += `
                     <tr>
-                        <td>${ product.product__name }</td>
-                        <td>${ product.quantity__sum }</td>
+                        <td>${supply.item__name}</td>
+                        <td>${supply.quantity}</td>
+                        <td>${supply.supplied_at}</td>
                     </tr>`
-                })
-                $("#totalPerProduct").html(totalPerProductHTML)
+            })
+            $("#supplyList").html(supplyListHTML)
 
-                // Total Sales
-                /**let totalSalesHTML = ""
-                res.total_sales.map((product) => {
-                    totalSalesHTML += `
+            // Total Produced Per Product
+            let totalPerProductHTML = ""
+            res.total_production_per_product.map((product) => {
+                totalPerProductHTML += `
                     <tr>
-                        <td>${ product.customer__name }</td>
-                        <td>${ product.product__name }</td>
-                        <td>${ product.quantity__sum }</td>
+                        <td>${product.product__name}</td>
+                        <td>${product.quantity__sum}</td>
                     </tr>`
-                })
-                $("#totalSales").html(totalSalesHTML)*/
+            })
+            $("#totalPerProduct").html(totalPerProductHTML)
 
-                // Total Sales p prod
-                let totalSalesPerProductHTML = ""
-                let totalProjectedSale = 0
-                res.total_sales_per_product.map((product) => {
-                    totalSalesPerProductHTML += `
-                    <tr>
-                        <td>${ product.product__name }</td>
-                        <td>${ product.quantity__sum }</td>
-                        <td>PHP ${ product.projected_sale__sum.toLocaleString('en-US', {maximumFractionDigits:2}) }</td>
-                    </tr>`
-                    console.log(totalProjectedSale)
-                    totalProjectedSale += Number(product.projected_sale__sum)
-                })
+            // Total Sales
+            let totalSalesHTML = ""
+            res.total_sales.map((product) => {
+                totalSalesHTML += `
+                <tr>
+                    <td>${product.customer__name}</td>
+                    <td>${product.product__name}</td>
+                    <td>${product.quantity__sum}</td>
+                </tr>`
+            })
+            $("#totalSales").html(totalSalesHTML)
+
+            // Total Sales p prod
+            let totalSalesPerProductHTML = ""
+            let totalProjectedSale = 0
+            res.total_sales_per_product.map((product) => {
                 totalSalesPerProductHTML += `
+                    <tr>
+                        <td>${product.product__name}</td>
+                        <td>${product.quantity__sum}</td>
+                        <td>PHP ${product.projected_sale__sum.toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                    </tr>`
+                console.log(totalProjectedSale)
+                totalProjectedSale += Number(product.projected_sale__sum)
+            })
+            totalSalesPerProductHTML += `
                 <tr>
                     <td> </td>
                     <td>Total Sales</td>
-                    <td>PHP ${ totalProjectedSale.toLocaleString('en-US', {maximumFractionDigits:2}) }</td>
+                    <td>PHP ${totalProjectedSale.toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
                 </tr>`
-                $("#totalSalesPerProduct").html(totalSalesPerProductHTML)
+            $("#totalSalesPerProduct").html(totalSalesPerProductHTML)
 
-                // Total Freebies Per Product
-                let totalFreebiesPerProductHTML = ""
-                res.total_freebies.map((product) => {
-                    totalFreebiesPerProductHTML += `
+            // Total Freebies Per Product
+            let totalFreebiesPerProductHTML = ""
+            res.total_freebies.map((product) => {
+                totalFreebiesPerProductHTML += `
                     <tr>
-                        <td>${ product.customer__name }</td>
-                        <td>${ product.product__name }</td>
-                        <td>${ product.freebies__sum }</td>
+                        <td>${product.customer__name}</td>
+                        <td>${product.product__name}</td>
+                        <td>${product.freebies__sum}</td>
                     </tr>`
-                })
-                $("#totalFreebiesPerProduct").html(totalFreebiesPerProductHTML)
-                
-                // Current Inventory
-                let currentInventoryHTML = ""
-                for (let product of Object.keys(res.current_inventory)) {
-                    currentInventoryHTML += `
+            })
+            $("#totalFreebiesPerProduct").html(totalFreebiesPerProductHTML)
+
+            // Current Inventory
+            let currentInventoryHTML = ""
+            for (let product of Object.keys(res.current_inventory)) {
+                currentInventoryHTML += `
                     <tr>
-                        <td>${ product }</td>
-                        <td>${ res.current_inventory[product] }</td>
+                        <td>${product}</td>
+                        <td>${res.current_inventory[product]}</td>
                     </tr>`
-                }
-                $("#currentInventory").html(currentInventoryHTML)
-                
-                let totalSacksPerProductHTML = ""
-                let totalSackCount = 0
-                res.total_flour.map((product) => {
-                    totalSacksPerProductHTML += `
+            }
+            $("#currentInventory").html(currentInventoryHTML)
+
+            let totalSacksPerProductHTML = ""
+            let totalSackCount = 0
+            res.total_flour.map((product) => {
+                totalSacksPerProductHTML += `
                     <tr>
-                        <td>${ product.production__product__name }</td>
-                        <td>${ product.quantity__sum }</td>
+                        <td>${product.production__product__name}</td>
+                        <td>${product.quantity__sum}</td>
                     </tr>`
-                    totalSackCount += Number(product.quantity__sum)
-                })
-                totalSacksPerProductHTML += 
+                totalSackCount += Number(product.quantity__sum)
+            })
+            totalSacksPerProductHTML +=
                 `<tr>
                     <td>Total Sacks:</td>
-                    <td>${ totalSackCount }</td>
+                    <td>${totalSackCount}</td>
                 </tr>`
-                $("#totalSacksPerProduct").html(totalSacksPerProductHTML)
-            })
-        }
-
-        $(".report-date-input").on("change", (e)=> {
-            e.preventDefault()
-
-            let from = $("#reportsFrom").val()
-            let to = $("#reportsTo").val()
-
-            getReportsData(from, to)
+            $("#totalSacksPerProduct").html(totalSacksPerProductHTML)
         })
-    </script>
+    }
+
+    $(".report-date-input").on("change", (e) => {
+        e.preventDefault()
+
+        let from = $("#reportsFrom").val()
+        let to = $("#reportsTo").val()
+
+        getReportsData(from, to)
+    })
+</script>
 {% endblock content %}
