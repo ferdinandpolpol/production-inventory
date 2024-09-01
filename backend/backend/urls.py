@@ -23,8 +23,10 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from rest_framework import routers
-from rest_framework_swagger.views import get_swagger_view
+from rest_framework import routers, permissions
+
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
 
 from . import views, viewsets
@@ -37,8 +39,18 @@ router.register(r'supply', viewsets.SupplyViewSet)
 router.register(r'product', viewsets.ProductViewSet)
 router.register(r'customer', viewsets.CustomerViewSet)
 
-schema_view = get_swagger_view(title="Amoren's API")
-
+schema_view = get_schema_view(
+   openapi.Info(
+      title="Snippets API",
+      default_version='v1',
+      description="Test description",
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="contact@snippets.local"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -54,5 +66,5 @@ urlpatterns = [
     path('api/reports/', views.reports_api),
 
     # Swagger
-    path('api/docs/', schema_view)
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

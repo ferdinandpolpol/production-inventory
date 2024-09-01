@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,32 +20,39 @@ import {
 
 import { useState } from "react";
 
-export const AddSaleForm = ({ products, addSaleData }) => {
-  const [selectedProduct, setSelectedProduct] = useState("");
+import { Product } from "@/types/production";
+
+interface AddSaleFormProps {
+  products: Product[];
+  addSaleData: (data: {
+    productId: string | undefined;
+    product: string | undefined; // Update the type of 'product' to 'string | undefined'
+    quantity: number;
+    freebies: number;
+    sales: number;
+  }) => void;
+}
+
+export const AddSaleForm = ({ products, addSaleData }: AddSaleFormProps) => {
+  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(undefined);
   const [quantity, setQuantity] = useState(0);
   const [freebies, setFreebies] = useState(0);
   const [sales, setSales] = useState(0);
 
+  const handleProductChange = (value: string) => {
+    const product = products.find((product) => product.code === value);
+    setSelectedProduct(product);
+  };
+  
   const addToTable = () => {
-
-    if (!selectedProduct || quantity <= 0 || sales <= 0) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-
     addSaleData({
-      product: selectedProduct,
+      productId: selectedProduct?.id,
+      product: selectedProduct?.name,
       quantity: quantity,
       freebies: freebies,
-      sales: sales
+      sales: sales,
     });
-
-    // Clear the form after submission (optional)
-    setSelectedProduct("");
-    setQuantity(0);
-    setFreebies(0);
-    setSales(0);
-  }
+  };
 
   return (
     <Card>
@@ -58,21 +64,22 @@ export const AddSaleForm = ({ products, addSaleData }) => {
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="product">Product</Label>
-              <Select onValueChange={ (value) => setSelectedProduct(value)} required>
+              <Select
+                onValueChange={(value) => handleProductChange(value)}
+              >
                 <SelectTrigger id="product">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
 
                 <SelectContent position="popper">
-                    {  products.map((product) => (
-                        <SelectItem key={product.id} value={product.code}>
-                            {product.name}
-                        </SelectItem>
-                    ))}
+                  {products.map((product) => (
+                    <SelectItem key={product.id} value={product.code}>
+                      {product.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-
 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="quantitySold">Quantity Sold</Label>
@@ -104,12 +111,12 @@ export const AddSaleForm = ({ products, addSaleData }) => {
                 required
               />
             </div>
-
           </div>
         </form>
       </CardContent>
+
       <CardFooter className="flex justify-between">
-        <Button onClick={ addToTable }>Add to table</Button>
+        <Button onClick={addToTable}>Add to table</Button>
       </CardFooter>
     </Card>
   );

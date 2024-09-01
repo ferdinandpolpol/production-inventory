@@ -4,7 +4,7 @@ RUN mkdir -p /usr/src/app
 WORKDIR /app
 
 # Install dependencies
-COPY package*.json ./
+COPY package.json package.json
 RUN yarn install
 
 # Copy the rest of the application

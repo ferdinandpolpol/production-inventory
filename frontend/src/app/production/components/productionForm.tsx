@@ -22,27 +22,7 @@ import {
 
 import { request } from "@/utils/request";
 
-interface Ingredient {
-  id: string;
-  main_ingredient: boolean;
-  ingredient: {
-    name: string;
-    id: string;
-    price: number;
-    unit: string;
-  };
-  multiplied_by_main_ingredient: boolean;
-  multiplied_by_production: boolean;
-  quantity: number;
-}
-interface Product {
-  id: string;
-  code: string;
-  name: string;
-  recipe: {
-    ingredients: Ingredient[];
-  };
-}
+import { Ingredient, Product } from "@/types/production";
 
 interface ProductionFormProps {
   products: Product[];
@@ -152,7 +132,7 @@ export const ProductionForm = ({
   };
 
   return (
-    <Card>
+    <Card className="h-[50vh]">
       <CardHeader>
         <CardTitle>Create production</CardTitle>
       </CardHeader>

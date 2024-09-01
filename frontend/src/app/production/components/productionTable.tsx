@@ -16,7 +16,7 @@ export const ProductionTable = ({
   productionData: Production[];
 }) => {
   return (
-    <div className="h-[63vh] relative overflow-auto bg-slate-100 rounded">
+    <div className="h-[50vh] relative overflow-auto bg-slate-50 rounded">
       <Table>
         <TableHeader className="sticky top-0 bg-secondary">
           <TableRow>

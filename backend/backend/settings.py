@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'rangefilter',
     'rest_framework',
     'corsheaders',
-    'rest_framework_swagger'
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -152,7 +152,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 50
+    'PAGE_SIZE': 50,
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 
 
