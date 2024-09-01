@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,9 +20,118 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export const ProductionForm = ({ products }) => {
+import { request } from "@/utils/request";
+
+interface Ingredient {
+  id: string;
+  main_ingredient: boolean;
+  ingredient: {
+    name: string;
+    id: string;
+    price: number;
+    unit: string;
+  };
+  multiplied_by_main_ingredient: boolean;
+  multiplied_by_production: boolean;
+  quantity: number;
+}
+interface Product {
+  id: string;
+  code: string;
+  name: string;
+  recipe: {
+    ingredients: Ingredient[];
+  };
+}
+
+interface ProductionFormProps {
+  products: Product[];
+}
+
+export const ProductionForm = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [showMainIngredient, setShowMainIngredient] = useState(false);
+  const [mainIngredient, setMainIngredient] = useState<Ingredient | string | undefined>(undefined);
+  const [otherIngredients, setOtherIngredients] = useState<Ingredient[] | undefined>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(undefined);
+  const [quantity, setQuantity] = useState(0);
+  const [mainIngredientUsed, setMainIngredientUsed] = useState(0);
+  const [inputDate, setInputDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
+
+  useEffect(() => {
+    async function getProducts() {
+      try {
+        const response = await request("/product/", { method: "GET" });
+        setProducts(response);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, []);
+
+  const handleProductChange = (value: string) => {
+    const product = products.find((product: Product) => product.code === value);
+    setSelectedProduct(product);
+
+    const _mainIngredient = product?.recipe?.ingredients.find(
+      (ingredient: Ingredient) => ingredient.main_ingredient,
+    );
+    const _otherIngredients = product?.recipe?.ingredients.filter(
+      (ingredient: Ingredient) => !ingredient.main_ingredient,
+    );
+
+    setOtherIngredients(_otherIngredients);
+    setMainIngredient(_mainIngredient);
+
+    console.log(_mainIngredient);
+    if (_mainIngredient?.id) {
+      setShowMainIngredient(true);
+      setMainIngredient(_mainIngredient.ingredient.name);
+    } else {
+      setShowMainIngredient(false);
+      setMainIngredient("");
+    }
+  };
+
+  const createProductionData = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    const ingredientMap = (otherIngredients ?? []).map((ingredient: Ingredient) => {
+      let quantityUsed = 0;
+
+      if (ingredient.multiplied_by_main_ingredient)
+        quantityUsed = mainIngredientUsed * ingredient.quantity;
+      else if (ingredient.multiplied_by_production) quantityUsed = quantity;
+
+      return {
+        ingredient: ingredient.ingredient,
+        quantity: quantityUsed,
+      };
+    });
+
+    const productionData = {
+      product: selectedProduct?.id,
+      quantity: quantity,
+      production_date: inputDate,
+      ingredients: ingredientMap,
+    };
+
+    try {
+      request("/production/", {
+        method: "POST",
+        body: JSON.stringify(productionData),
+      });
+    }
+    catch (error) {
+      console.error(error);
+    }
+
+  };
+
   return (
-    <Card className="w-[350px]">
+    <Card>
       <CardHeader>
         <CardTitle>Create production</CardTitle>
       </CardHeader>
@@ -33,30 +142,58 @@ export const ProductionForm = ({ products }) => {
               <Label htmlFor="productionDate">Production Date</Label>
               <Input
                 id="productionDate"
-                placeholder="Production Date"
                 type="date"
+                defaultValue={new Date().toISOString().split("T")[0]}
+                onChange={(e) => setInputDate(e.target.value)}
               />
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="productionProduct">Product</Label>
-              <Select>
+              <Select onValueChange={handleProductChange}>
                 <SelectTrigger id="productionProduct">
                   <SelectValue placeholder="Select" />
-                  {products.map((product) => (
-                    <SelectItem key={product.id} value={product.id}>
+                </SelectTrigger>
+
+                <SelectContent position="popper">
+                  {products.map((product: Product) => (
+                    <SelectItem key={product.id} value={product.code}>
                       {product.name}
                     </SelectItem>
                   ))}
-                </SelectTrigger>
-                <SelectContent position="popper"></SelectContent>
+                </SelectContent>
               </Select>
             </div>
+
+            {selectedProduct ? (
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="productionQuantity">Quantity</Label>
+                <Input
+                  id="productionQuantity"
+                  type="number"
+                  placeholder="Quantity"
+                  onChange={(e) => setQuantity(Number(e.target.value))}
+                />
+              </div>
+            ) : null}
+
+            {showMainIngredient ? (
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="mainIngredientUsed">
+                  # of {String(mainIngredient)} Used
+                </Label>
+                <Input
+                  id="mainIngredientUsed"
+                  type="number"
+                  placeholder="Quantity"
+                  onChange={(e) => setMainIngredientUsed(Number(e.target.value))}
+                />
+              </div>
+            ) : null}
           </div>
         </form>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button variant="outline">Cancel</Button>
-        <Button>Deploy</Button>
+        <Button onClick={createProductionData}>Create</Button>
       </CardFooter>
     </Card>
   );
