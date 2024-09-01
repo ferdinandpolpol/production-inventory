@@ -37,23 +37,23 @@ export const Navbar = () => {
   ]);
 
   useEffect(() => {
-      const user = localStorage.getItem("user");
-      if (user) {
-        const parsedUser = JSON.parse(user);
-        if (parsedUser) {
-          setLinks([
-            ...links,
-            {
-              id: 6,
-              link: "logout",
-            },
-          ]);
-        }
+    const user = localStorage.getItem("user");
+    if (user) {
+      const parsedUser = JSON.parse(user);
+      if (parsedUser) {
+        setLinks([
+          ...links,
+          {
+            id: 6,
+            link: "logout",
+          },
+        ]);
       }
+    }
   }, []);
 
   return (
-    <div className="flex justify-between items-center w-full h-20 px-4 text-white bg-gray-100 fixed nav z-50">
+    <div className="flex justify-between items-center w-full h-15 px-4 text-white bg-gray-100 fixed nav z-50">
       <div>
         <h1 className="text-6xl font-signature ml-2 text-rose-600 text-bold">
           Amoren
