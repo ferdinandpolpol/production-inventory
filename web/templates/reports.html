@@ -7,13 +7,12 @@
     <input type="date" id="reportsTo" name="production-to" class="form-control report-date-input mx-2" />
 </div>
 <div class="form-group mt-5">
-    <h4>Supply IN</h4>
+    <h4>Supply IN Total</h4>
     <table class="table table-striped">
         <thead class="thead-dark">
             <tr>
                 <th>Supply Item</th>
                 <th>Quantity</th>
-                <th>Date IN</th>
             </tr>
         </thead class="thead-dark">
         <tbody id="supplyList">
@@ -169,12 +168,11 @@
 
             // LIST OF ALL SUPPLY IN
             let supplyListHTML = ""
-            res.supply_inventory_list.map((supply) => {
+            res.supply_totals_per_product.map((supply) => {
                 supplyListHTML += `
                     <tr>
                         <td>${supply.item__name}</td>
-                        <td>${supply.quantity}</td>
-                        <td>${supply.supplied_at}</td>
+                        <td>${supply.quantity__sum}</td>
                     </tr>`
             })
             $("#supplyList").html(supplyListHTML)
