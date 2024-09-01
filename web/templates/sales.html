@@ -78,6 +78,7 @@ Sales Record
 
 </div>
 <script>
+
     $("#addSalesForm").on("submit", function (e) {
         e.preventDefault();
 
@@ -141,5 +142,18 @@ Sales Record
         });
     });
 
+    $("#addSalesForm").hide();
+    $("#productSale").on("change", function () {
+        console.log("change")
+        let selectedProduct = $(this).val();
+
+        console.log(selectedProduct)
+
+        if (selectedProduct && selectedProduct !== "none") {
+            $("#addSalesForm").show();
+        } else {
+            $("#addSalesForm").hide();
+        }
+    });
 </script>
 {% endblock content %}
