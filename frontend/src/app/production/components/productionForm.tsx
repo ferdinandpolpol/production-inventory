@@ -48,12 +48,22 @@ interface ProductionFormProps {
   products: Product[];
 }
 
-export const ProductionForm = () => {
+export const ProductionForm = ({
+  addProduction,
+}: {
+  addProduction: (data: any) => void;
+}) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [showMainIngredient, setShowMainIngredient] = useState(false);
-  const [mainIngredient, setMainIngredient] = useState<Ingredient | string | undefined>(undefined);
-  const [otherIngredients, setOtherIngredients] = useState<Ingredient[] | undefined>([]);
-  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(undefined);
+  const [mainIngredient, setMainIngredient] = useState<
+    Ingredient | string | undefined
+  >(undefined);
+  const [otherIngredients, setOtherIngredients] = useState<
+    Ingredient[] | undefined
+  >([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(
+    undefined,
+  );
   const [quantity, setQuantity] = useState(0);
   const [mainIngredientUsed, setMainIngredientUsed] = useState(0);
   const [inputDate, setInputDate] = useState(
@@ -96,21 +106,25 @@ export const ProductionForm = () => {
     }
   };
 
-  const createProductionData = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const createProductionData = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     e.preventDefault();
 
-    const ingredientMap = (otherIngredients ?? []).map((ingredient: Ingredient) => {
-      let quantityUsed = 0;
+    const ingredientMap = (otherIngredients ?? []).map(
+      (ingredient: Ingredient) => {
+        let quantityUsed = 0;
 
-      if (ingredient.multiplied_by_main_ingredient)
-        quantityUsed = mainIngredientUsed * ingredient.quantity;
-      else if (ingredient.multiplied_by_production) quantityUsed = quantity;
+        if (ingredient.multiplied_by_main_ingredient)
+          quantityUsed = mainIngredientUsed * ingredient.quantity;
+        else if (ingredient.multiplied_by_production) quantityUsed = quantity;
 
-      return {
-        ingredient: ingredient.ingredient,
-        quantity: quantityUsed,
-      };
-    });
+        return {
+          ingredient: ingredient.ingredient.id,
+          quantity: quantityUsed,
+        };
+      },
+    );
 
     const productionData = {
       product: selectedProduct?.id,
@@ -120,15 +134,21 @@ export const ProductionForm = () => {
     };
 
     try {
-      request("/production/", {
+      const response = await request("/production/", {
         method: "POST",
         body: JSON.stringify(productionData),
       });
-    }
-    catch (error) {
+
+      console.log(response);
+      addProduction({
+        production_id: response,
+        product_name: selectedProduct?.name,
+        quantity: quantity,
+        date: inputDate,
+      });
+    } catch (error) {
       console.error(error);
     }
-
   };
 
   return (
@@ -186,7 +206,9 @@ export const ProductionForm = () => {
                   id="mainIngredientUsed"
                   type="number"
                   placeholder="Quantity"
-                  onChange={(e) => setMainIngredientUsed(Number(e.target.value))}
+                  onChange={(e) =>
+                    setMainIngredientUsed(Number(e.target.value))
+                  }
                 />
               </div>
             ) : null}

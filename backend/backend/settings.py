@@ -163,3 +163,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://*.amorens.ph",
 ]
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(hours=1),
+    "ROTATE_REFRESH_TOKENS": False,
+}

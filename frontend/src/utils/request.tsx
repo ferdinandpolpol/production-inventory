@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { API_URL } from "@/constants";
 
@@ -26,6 +26,11 @@ const refreshToken = async (token: string) => {
   if (response.ok) {
     const data = await response.json();
     if (typeof window !== "undefined") {
+
+      if (!data.refresh) {
+        data.refresh = token;
+      }
+
       localStorage?.setItem("user", JSON.stringify(data));
     }
     return data.access;
@@ -40,7 +45,7 @@ export const request = async (url: string, options: RequestInit = {}) => {
   // Get access token only on the client side
   let _accessToken: string | null = null;
   let _refreshToken: string | null = null;
-  
+
   if (typeof window !== "undefined") {
     _accessToken = getAccessToken();
     _refreshToken = _accessToken
@@ -60,8 +65,10 @@ export const request = async (url: string, options: RequestInit = {}) => {
       ...options,
       headers,
     });
-
+    console.log("Response:", response);
+    console.log("refreshToken:", _refreshToken);
     if (response.status === 401 && _refreshToken) {
+      console.log("Attempting to refresh token...");
       const newAccessToken = await refreshToken(_refreshToken);
       headers.set("Authorization", `Bearer ${newAccessToken}`);
 

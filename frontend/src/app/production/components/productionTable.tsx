@@ -1,66 +1,41 @@
-'use client'
-
+"use client";
 
 import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-  } from "@/components/ui/table"
-import { request } from "@/utils/request";
-import { useEffect, useState } from "react";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Production } from "@/types/production";
 
-
-interface Production {
-    id: string;
-    product_name: string;
-    quantity: number;
-    date: string;
-}
-
-interface ProductionResponse {
-    results: Production[];
-}
-  
-
-export const ProductionTable = () => {
-    const [productionData, setProductionData] = useState<Production[]>([]);
-
-    useEffect(() => {
-        async function getProductionData() {
-            try {
-                const response: ProductionResponse = await request("/production/", { method: "GET" });
-                setProductionData(response.results);
-            } catch (error) {
-                console.error(error);
-            }
-        }
-        getProductionData();
-    }, [])
-    console.log("productionData", productionData)
-
-    return (
-        <Table className="bg-slate-100 rounded max-h-80 overflow-y-auto relative">
-        <TableHeader>
-        <TableRow>
+export const ProductionTable = ({
+  productionData,
+}: {
+  productionData: Production[];
+}) => {
+  return (
+    <div className="h-[63vh] relative overflow-auto bg-slate-100 rounded">
+      <Table>
+        <TableHeader className="sticky top-0 bg-secondary">
+          <TableRow>
             <TableHead>Product</TableHead>
             <TableHead>Quantity</TableHead>
             <TableHead>Date</TableHead>
-        </TableRow>
+          </TableRow>
         </TableHeader>
 
-        <TableBody className="overflow-y-auto block h-[500px]">
-        {productionData?.map((production: Production) => (
+        <TableBody className="">
+          {productionData?.map((production: Production) => (
             <TableRow key={production.id}>
-            <TableCell>{production.product_name}</TableCell>
-            <TableCell>{production.quantity}</TableCell>
-            <TableCell>{production.date}</TableCell>
+              <TableCell>{production.product_name}</TableCell>
+              <TableCell>{production.quantity}</TableCell>
+              <TableCell>{production.date}</TableCell>
             </TableRow>
-        ))}
+          ))}
         </TableBody>
-        </Table>
-    );
+      </Table>
+    </div>
+  );
 };
