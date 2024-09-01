@@ -23,4 +23,7 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
+
+    # APIs
+    path('api/product/<int:product_id>', views.get_product),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
