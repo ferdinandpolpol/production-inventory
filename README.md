@@ -1,3 +1,7 @@
+# WIP
+I'm currently working on this to work on my JS skills with NextJS because why not? 
+This was previously using django templates with JQuery and that worked fine but it might be 
+nicer to have this in a more modern front-end framework. + It MIGHT look good in my portfolio
 
 ## About The Project
 The project was created to automate processes for FAMILY BUSINESS
