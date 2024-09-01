@@ -25,8 +25,10 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('sales/', views.sales, name='sales'),
     path('supply/', views.supply, name='supply'),
+    path('reports/', views.reports, name='reports'),
 
     # APIs
+    path('api/reports/', views.reports_api),
     path('api/sales/', views.sales_api),
     path('api/supply/', views.supply_api),
     path('api/product/<int:product_id>', views.get_product),
