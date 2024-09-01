@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface Product {
   id: number;
@@ -12,7 +12,9 @@ interface ProductContextProps {
   loading: boolean;
 }
 
-const ProductContext = createContext<ProductContextProps | undefined>(undefined);
+const ProductContext = createContext<ProductContextProps | undefined>(
+  undefined,
+);
 
 export const useProductContext = () => {
   const context = useContext(ProductContext);
@@ -22,7 +24,11 @@ export const useProductContext = () => {
   return context;
 };
 
-export const ProductProvider = ({ children }: { children: React.ReactNode }) => {
+export const ProductProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,11 +36,11 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
     // Fetch data from Django API
     const fetchProducts = async () => {
       try {
-        const response = await fetch('/api/products/'); // Adjust the URL to your Django API
+        const response = await fetch("/api/product/"); // Adjust the URL to your Django API
         const data = await response.json();
         setProducts(data);
       } catch (error) {
-        console.error('Failed to fetch products:', error);
+        console.error("Failed to fetch products:", error);
       } finally {
         setLoading(false);
       }

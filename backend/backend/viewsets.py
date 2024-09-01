@@ -105,9 +105,12 @@ class ProductViewSet(ModelViewSet):
     serializer_class = ProductSerializer
 
     def list(self, request):
-        serializer = ProductSerializer()
+        serializer = ProductSerializer(instance=self.get_queryset(), many=True)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    def get(self, request):
-        serializer = ProductSerializer(data=request.data)
+    def get(self, request, id):
+        instance = self.get_queryset().get(id=id)  
+        serializer = ProductSerializer(instance=instance)
+
         return Response(serializer.data, status=status.HTTP_200_OK)

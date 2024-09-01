@@ -1,42 +1,40 @@
-'use client'
+"use client";
 
-import { Alert } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useState } from 'react'
-
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
 
 export const Form = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    console.log("Test Login")
-    console.log(apiUrl)
-
+    console.log("Test Login");
+    console.log(apiUrl);
 
     await fetch(`${apiUrl}/token/`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ username, password }),
     })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.error) {
-        setError(data.error)
-      } else {
-        localStorage.setItem('user', JSON.stringify(data))
-        window.location.href = '/'
-      }
-    })
-  }
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          setError(data.error);
+        } else {
+          localStorage.setItem("user", JSON.stringify(data));
+          window.location.href = "/";
+        }
+      });
+  };
 
   return (
     <div className="sm:shadow-xl px-10 py-10 sm:bg-slate-50 rounded-xl space-y-12">
@@ -66,11 +64,14 @@ export const Form = () => {
         </div>
         {error && <Alert>{error}</Alert>}
         <div className="w-full">
-          <Button className="w-full bg-rose-500 hover:bg-rose-800 text-white" size="lg">
+          <Button
+            className="w-full bg-rose-500 hover:bg-rose-800 text-white"
+            size="lg"
+          >
             Login
           </Button>
         </div>
       </form>
     </div>
-  )
-}
+  );
+};

@@ -1,3 +1,7 @@
+"""
+Old views.py that used Django Templating. The newer one uses NextJS with React and model viewsets
+"""
+
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
