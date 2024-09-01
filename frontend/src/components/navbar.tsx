@@ -34,7 +34,7 @@ export const Navbar = () => {
         <div className="flex justify-between items-center w-full h-20 px-4 text-white bg-gray-100 fixed nav">
         <div>
             <h1 className="text-6xl font-signature ml-2 text-rose-600 text-bold">
-                Amoren's
+                Amoren
             </h1>
         </div>
 

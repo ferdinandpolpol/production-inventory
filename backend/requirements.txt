@@ -7,3 +7,4 @@ django-admin-rangefilter
 django-admin-numeric-filter
 djangorestframework-simplejwt
 django-cors-headers
+django-rest-swagger

@@ -14,6 +14,7 @@ from .serializers import (
     PurchaseSerializer,
     SalesSerializer,
     SupplySerializer,
+    ProductSerializer
 )
 
 from .models import (
@@ -21,6 +22,7 @@ from .models import (
     Purchase,
     Sales,
     Supply,
+    Product,
 )
 
 
@@ -97,3 +99,15 @@ class PurchaseViewSet(ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class ProductViewSet(ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+    def list(self, request):
+        serializer = ProductSerializer()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def get(self, request):
+        serializer = ProductSerializer(data=request.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
