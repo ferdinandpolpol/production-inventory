@@ -1,7 +1,5 @@
 "use client";
 
-
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -19,32 +17,50 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Customer } from "@/types/customer";
 
-export const SelectCustomerForm = ({ customers, saleInitialData }) => {
+interface SelectCustomerFormProps {
+  customers: Customer[];
+  saleInitialData: (data: {
+    date: string;
+    salesType: string;
+    customer: string;
+    customerId: string;
+  }) => void;
+}
+
+export const SelectCustomerForm = ({
+  customers,
+  saleInitialData,
+}: SelectCustomerFormProps) => {
   const deliveryTypes = ["DELIVERY", "MALL", "WALK-IN"];
 
-  const [inputDate, setInputDate] = useState(new Date().toISOString().split("T")[0]);
+  const [inputDate, setInputDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
   const [selectedSalesType, setSelectedSalesType] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState("");
 
-  const handleNext = () => {
+  useEffect(() => {
     saleInitialData({
       date: inputDate,
       salesType: selectedSalesType,
-      customer: selectedCustomer
+      customer: selectedCustomer,
+      customerId: customers.find((customer) => customer.name === selectedCustomer)?.id || "",
     });
-  }
+  }, [inputDate, selectedSalesType, selectedCustomer]);
+
 
   return (
-    <Card>
-
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>Select a Customer</CardTitle>
       </CardHeader>
+
       <CardContent>
         <form>
-          <div className="grid h-full w-full items-center gap-4">
+          <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="saleDate">Sale Date</Label>
               <Input
@@ -57,42 +73,41 @@ export const SelectCustomerForm = ({ customers, saleInitialData }) => {
 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="salesType">Sales Type</Label>
-              <Select onValueChange={ (value) => setSelectedSalesType(value)}>
+              <Select onValueChange={(value) => setSelectedSalesType(value)}>
                 <SelectTrigger id="salesType">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
 
                 <SelectContent position="popper">
-                    {  deliveryTypes.map((deliveryType) => (
-                        <SelectItem key={deliveryType} value={deliveryType}>
-                            {deliveryType}
-                        </SelectItem>
-                    ))}
+                  {deliveryTypes.map((deliveryType) => (
+                    <SelectItem key={deliveryType} value={deliveryType}>
+                      {deliveryType}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="customer">Customer</Label>
-              <Select onValueChange={ (value) => setSelectedCustomer(value) }>
+              <Select onValueChange={(value) => setSelectedCustomer(value)}>
                 <SelectTrigger id="customer">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
 
                 <SelectContent position="popper">
-                    {  customers.map((customer) => (
-                        <SelectItem key={customer.id} value={customer.name}>
-                            {customer.name}
-                        </SelectItem>
-                    ))}
+                  {customers.map((customer) => (
+                    <SelectItem key={customer.id} value={customer.name}>
+                      {customer.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
         </form>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button onClick={ handleNext }>Next</Button>
+      <CardFooter className="">
       </CardFooter>
     </Card>
   );

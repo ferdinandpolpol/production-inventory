@@ -26,7 +26,6 @@ const refreshToken = async (token: string) => {
   if (response.ok) {
     const data = await response.json();
     if (typeof window !== "undefined") {
-
       if (!data.refresh) {
         data.refresh = token;
       }
@@ -35,7 +34,10 @@ const refreshToken = async (token: string) => {
     }
     return data.access;
   } else {
+    localStorage?.removeItem("user");
+    window.location.href = `/?next=${window.location.pathname}`;
     throw new Error("Refresh token is invalid or expired.");
+
   }
 };
 
@@ -65,8 +67,6 @@ export const request = async (url: string, options: RequestInit = {}) => {
       ...options,
       headers,
     });
-    console.log("Response:", response);
-    console.log("refreshToken:", _refreshToken);
     if (response.status === 401 && _refreshToken) {
       console.log("Attempting to refresh token...");
       const newAccessToken = await refreshToken(_refreshToken);

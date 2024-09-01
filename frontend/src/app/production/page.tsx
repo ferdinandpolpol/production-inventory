@@ -34,13 +34,15 @@ export default function ProductionPage() {
   };
 
   return (
-    <div className="flex flex-row sm:flex-column">
-      <div className="w-full p-4">
-        <ProductionForm addProduction={addProduction} />
-      </div>
+    <div className="mt-20 w-[90vw] h-[90vw]">
+      <div className="flex md:flex-row sm:flex-col">
+        <div className="w-full p-4">
+          <ProductionForm addProduction={addProduction} />
+        </div>
 
-      <div className="w-full p-4">
-        <ProductionTable productionData={productionData} />
+        <div className="w-full p-4">
+          <ProductionTable productionData={productionData} />
+        </div>
       </div>
     </div>
   );
