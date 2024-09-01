@@ -46,6 +46,11 @@ class PurchaseAdmin(admin.ModelAdmin):
     inlines = [ 
         SupplyInline,
     ]
+
+class ProductionAdmin(admin.ModelAdmin):
+    list_display = ["product", "quantity", "date"]
+
+    list_filter = ["product", ("date", DateRangeFilter)]
     
 
 
@@ -57,7 +62,7 @@ admin.site.register(Supply)
 admin.site.register(Ingredient)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(ProductionIngredients)
-admin.site.register(Production)
+admin.site.register(Production, ProductionAdmin)
 admin.site.register(Sales, SalesAdmin)
 admin.site.register(Purchase, PurchaseAdmin)
 admin.site.register(Supplier, SupplierAdmin)
