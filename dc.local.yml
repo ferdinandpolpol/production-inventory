@@ -1,24 +1,39 @@
 version: '3'
 
 services:
-  web:
+  backend:
     restart: always
     build:
-      context: ./web
-      dockerfile: ./Dockerfile.dev
+      context: ./backend
+      dockerfile: ./Dockerfile
     volumes:
       - web-static:/usr/src/app/static
-      - ./web:/usr/src/app
+      - ./backend:/usr/src/app
     env_file: .env
     command: python manage.py runserver 0.0.0.0:8000
     ports:
-      - 80:8000
+      - 8000:8000
     environment:
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      DEBUG: 'True'
+  
+  frontend:
+    restart: always
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./frontend:/usr/src/app
+    ports:
+      - 3000:3000
+    environment:
+      REACT_APP_API_URL: http://backend:8000/api
+      NEXT_PUBLIC_API_URL: http://backend:8000/api
+      CHOKIDAR_USEPOLLING: 'true'
     
   db:
     image: postgres
