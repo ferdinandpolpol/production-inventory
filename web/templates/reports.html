@@ -61,6 +61,19 @@
                     <th>Total Quantity</th>
                 </tr>
             </thead class="thead-dark">
+            <tbody id="totalSales">
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <h4>Total Sales/Product</h4>
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Product</th>
+                    <th>Total Quantity</th>
+                </tr>
+            </thead class="thead-dark">
             <tbody id="totalSalesPerProduct">
             </tbody>
         </table>
@@ -85,7 +98,9 @@
             <thead class="thead-dark">
                 <tr>
                     <th>Product</th>
-                    <th>Total Quantity</th>
+                    <th>
+                        Total Quantity
+                    </th>
                 </tr>
             </thead class="thead-dark">
             <tbody id="currentInventory">
@@ -159,12 +174,23 @@
                 })
                 $("#totalPerProduct").html(totalPerProductHTML)
 
-                // Total Sales Per Product
-                let totalSalesPerProductHTML = ""
+                // Total Sales
+                let totalSalesHTML = ""
                 res.total_sales.map((product) => {
-                    totalSalesPerProductHTML += `
+                    totalSalesHTML += `
                     <tr>
                         <td>${ product.customer__name }</td>
+                        <td>${ product.product__name }</td>
+                        <td>${ product.quantity__sum }</td>
+                    </tr>`
+                })
+                $("#totalSales").html(totalSalesHTML)
+
+                // Total Sales p prod
+                let totalSalesPerProductHTML = ""
+                res.total_sales_per_product.map((product) => {
+                    totalSalesPerProductHTML += `
+                    <tr>
                         <td>${ product.product__name }</td>
                         <td>${ product.quantity__sum }</td>
                     </tr>`
