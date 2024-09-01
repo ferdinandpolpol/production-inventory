@@ -2,14 +2,17 @@
 from django.db import models
 from django.db.models import F, Sum
 
+
 class CustomerType(models.Model):
     name = models.CharField(max_length=255)
+
 
 class Customer(models.Model):
     name = models.CharField(max_length=255)
     address = models.TextField()
     contact = models.CharField(max_length=20)
-    customer_type = models.ForeignKey(CustomerType, on_delete=models.SET_NULL, null=True)
+    customer_type = models.ForeignKey(
+        CustomerType, on_delete=models.SET_NULL, null=True)
 
 
 class Product(models.Model):
@@ -25,6 +28,7 @@ class Product(models.Model):
     def get_ingredients(self, *args, **kwargs):
         return self.recipe.ingredient_set.all()
 
+
 class SupplyItem(models.Model):
     name = models.CharField(max_length=255)
     price = models.FloatField()
@@ -33,6 +37,7 @@ class SupplyItem(models.Model):
     def __str__(self) -> str:
         return self.name
 
+
 class Supply(models.Model):
     class Meta:
         verbose_name_plural = 'Supplies'
@@ -40,28 +45,48 @@ class Supply(models.Model):
     item = models.ForeignKey(SupplyItem, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField()
     supplied_at = models.DateTimeField()
-    
+
     def get_current_sum(self, id=None):
         return Supply.objects.values('item').annotate(item__sum=Sum('quantity'))
 
+
 class Ingredient(models.Model):
-    recipe = models.ForeignKey("Recipe", related_name="ingredients", on_delete=models.CASCADE)
-    ingredient = models.ForeignKey(SupplyItem, on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        unique_together = ('recipe', 'main_ingredient')
+
+    recipe = models.ForeignKey(
+        "Recipe", related_name="ingredients", on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(
+        SupplyItem, on_delete=models.SET_NULL, null=True)
     quantity = models.FloatField(help_text="Quantity of the ingredient used")
+
+    # The point of these data is that we multiply a normal ingredient
+    # based on the quantity of the main ingredient for production ingredients
+    main_ingredient = models.BooleanField(default=False)
+    multiplied_by_main_ingredient = models.BooleanField(default=True)
+    multiplied_by_production = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return f"{ self.recipe.name } - {self.ingredient.name}"
+
 
 class Recipe(models.Model):
     name = models.CharField(max_length=255)
-    quantity_produced = models.FloatField(help_text="How many this recipe will produce for the product")
+    quantity_produced = models.FloatField(
+        help_text="How many this recipe will produce for the product")
 
     def __str__(self) -> str:
         return self.name
 
 
-
 class ProductionIngredients(models.Model):
-    production = models.ForeignKey('Production', related_name="ingredients", on_delete=models.SET_NULL, null=True)
-    ingredient = models.ForeignKey(SupplyItem, on_delete=models.SET_NULL, null=True)
+    production = models.ForeignKey(
+        'Production', related_name="ingredients", on_delete=models.SET_NULL, null=True)
+    ingredient = models.ForeignKey(
+        SupplyItem, on_delete=models.SET_NULL, null=True)
     quantity = models.FloatField()
+
 
 class Production(models.Model):
     """ This also acts as the inventory """
@@ -78,10 +103,10 @@ class Production(models.Model):
             ingredients_used=F('quantity') * self.quantity
         ).values()
 
+
 class Sales(models.Model):
     sales_type = models.CharField(max_length=255)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField()
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
-
-
+    customer = models.ForeignKey(
+        Customer, on_delete=models.SET_NULL, null=True)
