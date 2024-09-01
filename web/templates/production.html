@@ -5,42 +5,42 @@ Production
 {% block content %}
 <form id="createProductionData" class="form mt-5 p-5 border border-2">
 
-    <div class="form-group">
-        <label for="dateProduced">Actual Production</label>
-        <input id="dateProduced" type="date" min=0 class="form-control" />
+    <div class="row">
+        <div class="col">
+            <label for="dateProduced">Production Date</label>
+            <input id="dateProduced" type="date" min=0 class="form-control" required />
+        </div>
+        <div class="col">
+            <label for="product">Product</label>
+            <select id="product" class="form-control" required>
+                <option value="">
+                    ...
+                </option>
+                {% for product in products %}
+                <option value="{{ product.id }}">
+                    {{ product.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col">
+            <label for="quantityProduced">Actual</label>
+            <input id="quantityProduced" type="number" min=0 class="form-control" required />
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="product">Product</label>
-        <select id="product" class="form-control">
-            <option value="">
-                ...
-            </option>
-            {% for product in products %}
-            <option value="{{ product.id }}">
-                {{ product.name }}
-            </option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="quantityProduced">Actual Production</label>
-        <input id="quantityProduced" type="text" min=0 class="form-control" />
-    </div>
-    <table class="table">
-        <thead class="thead-dark">
-            <tr>
-                <th>ITM</th>
-                <th>QTY</th>
-                <th>UNIT</th>
-                <th>AMOUNT USED</th>
-            </tr>
-        </thead>
+    <table class="table mt-2">
         <tbody id="tableIngredientBody">
         </tbody>
     </table>
+
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+
+
+
+<!-- 
 <div class="border border-2 p-5">
     <div class="form-inline">
         <label>Production Report from</label>
@@ -71,7 +71,7 @@ Production
         <tbody id="tableProductionListTotals">
         </tbody>
     </table>
-</div>
+</div> -->
 <script>
     // Instantiate when the document has loaded
     $(document).ready(function () {
@@ -102,11 +102,22 @@ Production
                     "quantity": String($(itm).find("input").val())
                 })
             })
-            request("POST", `/api/production/`, data,
-                (res) => {
-                    alert("Successfully created production data.")
-                }
-            )
+            // request("POST", `/api/production/`, data,
+            //     (res) => {
+            //         alert("Successfully created production data.")
+            //     }
+            // )
+
+            console.log("Restes")
+            document.querySelectorAll('input, select').forEach((input) => {
+                input.value = ''
+                // input.addEventListener("click", (e) => {
+                //     console.log("click number")
+                //     e.preventDefault()
+
+                //     e.target.value = ''
+                // })
+            })
         })
 
         function getProduction(from = today, to = today) {
@@ -179,14 +190,21 @@ Production
                         let mainIngredient = ingredient.main_ingredient
                         let multipliedByMainIngredient = ingredient.multiplied_by_main_ingredient
                         let multipliedByProduction = ingredient.multiplied_by_production
+                        let classHidden = !mainIngredient ? 'd-none' : ''
 
                         html += `
-                        <tr data-ingredient="${ingredient.ingredient.id}">
+                        <tr data-ingredient="${ingredient.ingredient.id}"  class='${classHidden}'>
                             <td>${ingredient.ingredient.name}</td>
                             <td>...</td>
                             <td>${ingredient.ingredient.unit}</td>
 
-                            <td><input type="number" step=".1" data-recipe-quantity="${ingredient.quantity}" data-main-ingredient="${mainIngredient}" data-multiplied-by-main-ingredient="${multipliedByMainIngredient}" data-multiplied-by-production="${multipliedByProduction}" />
+                            <td><input type="number" step=".1" 
+                                data-recipe-quantity="${ingredient.quantity}" 
+                                data-main-ingredient="${mainIngredient}" 
+                                data-multiplied-by-main-ingredient="${multipliedByMainIngredient}" 
+                                data-multiplied-by-production="${multipliedByProduction}" 
+                                ${mainIngredient ? 'required' : ''}
+                            />
                             </td>
                         </tr>
                         `
@@ -206,6 +224,11 @@ Production
                             let recipeQuantity = $(item).data("recipeQuantity")
                             $(item).val(parseFloat(recipeQuantity) * parseFloat(value))
                         })
+
+                        $("#tableIngredientBody [data-multiplied-by-production=true]").each((index, item) => {
+                            let value = $("#quantityProduced").val()
+                            $(item).val(value)
+                        })
                     })
                 }
             )
@@ -216,9 +239,11 @@ Production
 
             let value = e.target.value
             $("#tableIngredientBody [data-multiplied-by-production=true]").each((index, item) => {
+                console.log(item)
                 $(item).val(value)
             })
         })
+
     });
 </script>
 {% endblock content %}

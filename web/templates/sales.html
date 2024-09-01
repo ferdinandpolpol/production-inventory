@@ -1,77 +1,80 @@
 {% extends "base.html" %}
 {% block header %}
-    Sales Record
+Sales Record
 {% endblock header %}
 {% block content %}
-    <div class="form mt-5 p-5 border border-2">
-        <form id="salesForm">
-            <div class="form-group">
+<div class="form mt-5 p-5 border border-2">
+    <form id="salesForm">
+        <div class="row">
+            <div class="col">
+                <label for="salesDate">Date</label>
+                <input type="date" id="salesDate" class="form-control" />
+            </div>
+            <div class="col">
                 <label for="salesType">Sales Type</label>
                 <input type="text" id="salesType" class="form-control" />
             </div>
-            <div class="form-group">
+            <div class="col">
                 <label for="productSale">Product</label>
                 <select id="productSale" class="form-control">
                     <option value="none">
                         ...
                     </option>
                     {% for product in products %}
-                        <option value="{{ product.id }}">
-                            {{ product.name }}
-                        </option>
+                    <option value="{{ product.id }}">
+                        {{ product.name }}
+                    </option>
                     {% endfor %}
                 </select>
             </div>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Customer</th>
-                        <th>Amount Sold</th>
-                        <th>Freebies</th>
-                        <th>Sale</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="salesRow">
-                        <td>
-                            <select class="form-control customerSelect">
-                                <option value="none">
-                                    ...
-                                </option>
-                                {% for customer in customers %}
-                                    <option value="{{ customer.id }}">
-                                        {{ customer.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td>
-                            <input type="number" class="form-control quantitySale" />
-                        </td>
-                        <td>
-                            <input type="number" class="form-control quantityFreebies" />
-                        </td>
-                        <td>
-                            <input type="number" step=".01" class="form-control salesRevenue" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="4">
-                            <button type="button" class="btn btn-secondary" onClick="addNewTableRow()">+</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="form-group">
-                <label for="salesDate">Date</label>
-                <input type="date" id="salesDate" class="form-control" />
-            </div>
-            <button type="submit" class="btn btn-primary mb-2">Submit Sale</button>
-        </form>
-    </div>
-    <script>
-        function addNewTableRow () {
-            let newSalesRow = `
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Amount Sold</th>
+                    <th>Freebies</th>
+                    <th>Sale</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="salesRow">
+                    <td>
+                        <select class="form-control customerSelect">
+                            <option value="none">
+                                ...
+                            </option>
+                            {% for customer in customers %}
+                            <option value="{{ customer.id }}">
+                                {{ customer.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="form-control quantitySale" />
+                    </td>
+                    <td>
+                        <input type="number" class="form-control quantityFreebies" />
+                    </td>
+                    <td>
+                        <input type="number" step=".01" class="form-control salesRevenue" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <button type="button" class="btn btn-secondary" onClick="addNewTableRow()">+</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary mb-2">Submit Sale</button>
+    </form>
+</div>
+<script>
+    function addNewTableRow() {
+        let newSalesRow = `
             <tr class="salesRow">
                 <td>
                     <select class="form-control customerSelect">
@@ -96,32 +99,41 @@
                 </td>
             </tr>
             `
-            $(".salesRow").last().after(newSalesRow)
-        }
+        $(".salesRow").last().after(newSalesRow)
 
-        $("#salesForm").on("submit", (e) => {
-            e.preventDefault()
+        document.querySelectorAll('input[type=number]').forEach((input) => {
+            input.addEventListener("click", (e) => {
+                console.log("click number")
+                e.preventDefault()
 
-            let data = []
-
-            $(".salesRow").each((index, item) => {
-                // each row get all input data
-                data.push({
-                    sales_type: String($("#salesType").val()),
-                    product: String($("#productSale").find(":selected").val()),
-                    customer: String($(item).find(".customerSelect").find(":selected").val()),
-                    quantity: String($(item).find(".quantitySale").val()),
-                    freebies: String($(item).find(".quantityFreebies").val()) || 0,
-                    actual_sale: String($(item).find(".salesRevenue").val()) || 0,
-                    date: String($("#salesDate").val()),
-                })
+                e.target.value = ''
             })
+        })
+    }
 
-            request("POST", "/api/sales/", data, (res) => {
-                alert("Successfully created sale entry.")
-                $("#productSale").find(":selected").val(null)
+    $("#salesForm").on("submit", (e) => {
+        e.preventDefault()
+
+        let data = []
+
+        $(".salesRow").each((index, item) => {
+            // each row get all input data
+            data.push({
+                sales_type: String($("#salesType").val()),
+                product: String($("#productSale").find(":selected").val()),
+                customer: String($(item).find(".customerSelect").find(":selected").val()),
+                quantity: String($(item).find(".quantitySale").val()),
+                freebies: String($(item).find(".quantityFreebies").val()) || 0,
+                actual_sale: String($(item).find(".salesRevenue").val()) || 0,
+                date: String($("#salesDate").val()),
             })
         })
 
-    </script>
+        request("POST", "/api/sales/", data, (res) => {
+            alert("Successfully created sale entry.")
+            $("#productSale").find(":selected").val(null)
+        })
+    })
+
+</script>
 {% endblock content %}
