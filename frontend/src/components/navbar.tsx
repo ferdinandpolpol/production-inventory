@@ -6,8 +6,7 @@ import { FaBars, FaTimes } from "react-icons/fa";
 
 export const LogOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.preventDefault();
-  console.log("logout");
-  localStorage.removeItem("user");
+  if (typeof window !== "undefined") localStorage.removeItem("user");
   window.location.href = "/";
 };
 
@@ -36,7 +35,7 @@ export const Navbar = () => {
       link: "reports",
     },
     // show this only if localStorage user is set
-    localStorage.user
+    typeof window !== "undefined" && localStorage.user
       ? {
           id: 6,
           link: "logout",
@@ -45,7 +44,7 @@ export const Navbar = () => {
   ];
 
   return (
-    <div className="flex justify-between items-center w-full h-20 px-4 text-white bg-gray-100 fixed nav">
+    <div className="flex justify-between items-center w-full h-20 px-4 text-white bg-gray-100 fixed nav z-50">
       <div>
         <h1 className="text-6xl font-signature ml-2 text-rose-600 text-bold">
           Amoren

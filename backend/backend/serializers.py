@@ -18,7 +18,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ingredient
-        fields = ("__all__")
+        fields = ("id", "ingredient", "quantity", "main_ingredient", "multiplied_by_main_ingredient", "multiplied_by_production")
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -34,7 +34,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ("name", "price", "code", "recipe")
+        fields = ("id", "name", "price", "code", "recipe")
 
 
 class ProductionIngredientsCreateSerializer(serializers.ModelSerializer):
@@ -69,8 +69,14 @@ class ProductionSerializer(serializers.ModelSerializer):
 
 
 class ProductionListSerializer(ProductionSerializer):
-    ingredients = ProductionIngredientsSerializer(many=True)
-    product = ProductSerializer()
+    product_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Production
+        fields = ("id", "product_name", "quantity", "date")
+
+    def get_product_name(self, obj):
+        return obj.product.name if obj.product else None
 
 
 class SalesSerializer(serializers.ModelSerializer):

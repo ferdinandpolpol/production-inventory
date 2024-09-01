@@ -1,7 +1,8 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.mixins import ListModelMixin
 
 
 from django.utils import timezone
@@ -26,22 +27,26 @@ from .models import (
 )
 
 
-class ProductionViewSet(ModelViewSet):
-    queryset = Production.objects.all()
+class ProductionViewSet(ListModelMixin, GenericViewSet):
+    queryset = Production.objects.order_by('-date')
     serializer_class = ProductionSerializer
 
-    def list(self, request, *args, **kwargs):
-        from_date = request.query_params.get("from")
-        to_date = request.query_params.get("to")
-        id = kwargs.get('pk', None)
-        instance = None
-        if id:
-            instance = Production.objects.get(id=id)
-        else:
-            instance = Production.objects.filter(date__range=[from_date, to_date])
+    def list(self, request):
+        serializer = ProductionListSerializer(instance=self.get_queryset(), many=True)
 
-        serializer = ProductionListSerializer(instance=instance, many=True)
+        pagination = self.paginate_queryset(serializer.data)
+        if pagination is not None:
+            return self.get_paginated_response(pagination)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
+        
+    
+    def get(self, request, id):
+        instance = Production.objects.get(id=id)
+        serializer = ProductionSerializer(instance=instance)
+
+        return Response(serializer.data, status=status)
+
 
     def create(self, request, *args, **kwargs):
         kwargs = {"date": timezone.now().date()}
@@ -65,7 +70,7 @@ class ProductionViewSet(ModelViewSet):
         return Response(instance, status=status.HTTP_200_OK)
 
 
-class SalesViewSet(ModelViewSet):
+class SalesViewSet(ListModelMixin, GenericViewSet):
     queryset = Sales.objects.all()
     serializer_class = SalesSerializer
 
@@ -76,7 +81,7 @@ class SalesViewSet(ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class SupplyViewSet(ModelViewSet):
+class SupplyViewSet(ListModelMixin, GenericViewSet):
     queryset = Supply.objects.all()
     serializer_class = SupplySerializer
 
@@ -88,7 +93,7 @@ class SupplyViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class PurchaseViewSet(ModelViewSet):
+class PurchaseViewSet(ListModelMixin, GenericViewSet):
     queryset = Purchase.objects.all()
     serializer_class = PurchaseSerializer
 
@@ -100,7 +105,7 @@ class PurchaseViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ProductViewSet(ModelViewSet):
+class ProductViewSet(ListModelMixin, GenericViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
