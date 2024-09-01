@@ -40,6 +40,11 @@
     </head>
     <body>
         <div class="container">
+            <h1>
+                {% block header %}
+                    Base
+                {% endblock header %}
+            </h1>
             {% block content %}{% endblock %}
         </div>
         <script>
