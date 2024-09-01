@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rangefilter',
     'rest_framework',
     'corsheaders',
+    'rest_framework_swagger'
 ]
 
 MIDDLEWARE = [
