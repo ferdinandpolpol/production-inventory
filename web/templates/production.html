@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block header %}
-Production
+Production Record
 {% endblock header %}
 {% block content %}
 <form id="createProductionData" class="form-control form-control-lg mt-5 p-5 border border-2">
@@ -8,11 +8,11 @@ Production
     <div class="row">
         <div class="col-12">
             <label for="dateProduced">Production Date</label>
-            <input id="dateProduced" type="date" min=0 class="form-control" required />
+            <input id="dateProduced" type="date" min=0 class="form-control form-control-lg large-input" required />
         </div>
         <div class="col-12">
             <label for="product">Product</label>
-            <select id="product" class="form-control" required>
+            <select id="product" class="form-control form-control-lg large-input" required>
                 <option value="">
                     ...
                 </option>
@@ -26,7 +26,8 @@ Production
 
         <div class="col-12">
             <label for="quantityProduced">Actual Production</label>
-            <input id="quantityProduced" type="number" min=0 class="form-control" required />
+            <input id="quantityProduced" type="number" min=0 class="form-control form-control-lg large-input"
+                required />
         </div>
     </div>
 
