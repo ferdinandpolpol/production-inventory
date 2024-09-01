@@ -1,20 +1,37 @@
-{% load static %}  
+{% load static %}
 <html>
     <head>
-        <title>{% block title %}Test{% endblock %}</title>
-        <link rel="stylesheet" href="{% static 'bootstrap-4.0.0-dist/css/bootstrap.css' %}" />
-
+        <title>
+            {% block title %}Test{% endblock %}
+        </title>
+        <link rel="stylesheet"
+              href="{% static 'bootstrap-4.0.0-dist/css/bootstrap.css' %}"/>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script>
+            function request (method="GET", url, data={}, success_cb=null, error_cb=null) {
+                $.ajax({
+                    type: method,
+                    url: url,
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    headers:{"X-CSRFToken": "{{ csrf_token }}"},
+                    dataType: "json",
+                    success: (res) => {
+                        if (success_cb) success_cb(res)
+                    },
+                    error: (res) => {
+                        if (error_cb) error_cb(res)
+                    }
+                })
+            }
+        </script>
     </head>
-
     <body>
         <div class="container">
-        {% block content %}
-        {% endblock %}
+            {% block content %}{% endblock %}
         </div>
-        
         <!-- Scripts -->
         <script src="{% static 'bootstrap-4.0.0-dist/js/bootstrap.js' %}"  type="text/javascript" />
-        {% block scripts %}{% endblock %}
-    </body>
+{% block scripts %}{% endblock %}
+</body>
 </html>

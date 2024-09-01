@@ -1,6 +1,8 @@
 
 from django.db import models
 from django.db.models import F, Sum
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 
 class CustomerType(models.Model):
@@ -13,6 +15,9 @@ class Customer(models.Model):
     contact = models.CharField(max_length=20)
     customer_type = models.ForeignKey(
         CustomerType, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Product(models.Model):
@@ -51,10 +56,6 @@ class Supply(models.Model):
 
 
 class Ingredient(models.Model):
-
-    class Meta:
-        unique_together = ('recipe', 'main_ingredient')
-
     recipe = models.ForeignKey(
         "Recipe", related_name="ingredients", on_delete=models.CASCADE)
     ingredient = models.ForeignKey(
@@ -108,5 +109,13 @@ class Sales(models.Model):
     sales_type = models.CharField(max_length=255)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField()
+    freebies = models.IntegerField()
     customer = models.ForeignKey(
         Customer, on_delete=models.SET_NULL, null=True)
+    actual_sale = models.FloatField()
+    projected_sale = models.FloatField()
+
+
+@receiver(pre_save, sender=Sales)
+def generate_projected_sale(sender, instance, **kwargs):
+    instance.projected_sale = instance.product.price * instance.quantity
