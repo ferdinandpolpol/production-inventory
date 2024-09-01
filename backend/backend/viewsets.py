@@ -15,7 +15,8 @@ from .serializers import (
     PurchaseSerializer,
     SalesSerializer,
     SupplySerializer,
-    ProductSerializer
+    ProductSerializer,
+    CustomerSerializer
 )
 
 from .models import (
@@ -24,6 +25,7 @@ from .models import (
     Sales,
     Supply,
     Product,
+    Customer
 )
 
 
@@ -119,3 +121,13 @@ class ProductViewSet(ListModelMixin, GenericViewSet):
         serializer = ProductSerializer(instance=instance)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class CustomerViewSet(ListModelMixin, GenericViewSet):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+
+    def list(self, request):
+        data = self.get_queryset().values("id", "name")
+
+        return Response(data, status=status.HTTP_200_OK)
+
