@@ -1,225 +1,73 @@
 {% extends "base.html" %}
-{% block content %}
-    <form id="createProductionData" class="form mt-5 p-5 border border-2">
-        <div class="form-group">
-            <label for="product">Product</label>
-            <select id="product" class="form-control">
-                <option value="">
-                    ...
-                </option>
-                {% for product in products %}
-                    <option value="{{ product.id }}">
-                        {{ product.name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="quantityProduced">Actual Production</label>
-            <input id="quantityProduced" type="text" min=0 class="form-control" />
-        </div>
-        <div class="form-group">
-            <label for="dateProduced">Actual Production</label>
-            <input id="dateProduced" type="date" min=0 class="form-control" />
-        </div>
-        <table class="table">
-            <thead class="thead-dark">
-                <tr>
-                    <th>ITM</th>
-                    <th>QTY</th>
-                    <th>UNIT</th>
-                    <th>AMOUNT USED</th>
-                </tr>
-            </thead>
-            <tbody id="tableIngredientBody">
-            </tbody>
-        </table>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-    <div class="border border-2 p-5">
-        <div class="form-inline">
-            <label>Production Report from</label>
-            <input type="date"
-                   id="productionFrom"
-                   name="production-from"
-                   class="form-control production-date-input mx-2"/>
-            <label>To</label>
-            <input type="date"
-                   id="productionTo"
-                   name="production-to"
-                   class="form-control production-date-input mx-2"/>
-        </div>
-        <table id="productionReport" class="table table-striped mt-5">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Product</th>
-                    <th>Quantity Produced</th>
-                    <th>Production Date</th>
-                    <th>Ingredients</th>
-                    <th>Ingredient Used</th>
-                </tr>
-            </thead>
-            <tbody id="tableProductionList">
-            </tbody>
-        </table>
-        <table id="productionReportTotals" class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Product</th>
-                    <th>Total Produced</th>
-                </tr>
-            </thead>
-            <tbody id="tableProductionListTotals">
-            </tbody>
-        </table>
-    </div>
-    <script>
-    // Instantiate when the document has loaded
-    $(document).ready(function () {
-        var today = new Date();
-        var dd = String(today.getDate()).padStart(2, '0');
-        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-        var yyyy = today.getFullYear();
-        today = `${yyyy}-${mm}-${dd}`
-        
-        $("input[date]").each((index, item) => {
-            $(item).val(today)
-        })
-
-        // POST Production data
-        $("#createProductionData").on("submit", (e) => {
-            e.preventDefault();
-
-            let data = {
-                product: String($("#product").find(":selected").val()),
-                quantity: String($("#quantityProduced").val()),
-                date: String($("#dateProduced").val()),
-                ingredients: []
-            }
-
-            $("#tableIngredientBody tr").each((i, itm) => {
-                data.ingredients.push({
-                    "ingredient": String(itm.dataset.ingredient),
-                    "quantity": String($(itm).find("input").val())
-                })
-            })
-            request("POST", `/api/production/`, data, 
-                (res)=> {
-                    alert("Successfully created production data.")
-                }
-            )
-        })
-
-        function getProduction(from=today, to=today) {
-            request("GET", `/api/production/?from=${ from }&to=${ to }`, {}, 
-                (res)=> {
-                    let html = ""
-                    for (let production of res) {
-                        let ingredientsList = ""
-                        let ingredientsList2 = ""
-
-                        production.ingredients.map((ingredient) => {
-                            ingredientsList += `
-                                <li>${ ingredient.ingredient.name }</li>
-                            `
-                            ingredientsList2 += `
-                                <li>x ${ ingredient.quantity } ${ ingredient.ingredient.unit }</li>
-                            `
-                        })
-                        
-                        html += `
-                            <tr data-production="${production.id}">
-                                <td>${ production.product.name }</td>
-                                <td>${ production.quantity }</td>
-                                <td>${ production.date }</td>
-                                <td><ul>${ ingredientsList }</ul></td>
-                                <td><ul>${ ingredientsList2 }</ul></td>
-                            </tr>
-                        `
-                    }
-                    $("#tableProductionList").html(html)
-                })
-            request("GET", `/api/production/totals/?from=${ from }&to=${ to }`, {},
-                (response) => {
-                    let html = ""
-                    response.map((productTotal) => {
-                        html += `
-                            <tr>
-                                <td>${ productTotal.product__name }</td>
-                                <td>${ productTotal.totals }</td>
-                            </tr>
-                        `
-                    })
-                    $("#tableProductionListTotals").html(html)
-                }
-            )
+<!-- -->
+{% block header %}
+{% endblock header %}
+<!-- -->
+{% block styles %}
+    <style>
+        .col {
+            padding-left: 5px;
+            padding-right: 5px;
         }
-        getProduction()
-
-        $(".production-date-input").on("change", (e)=> {
-            e.preventDefault()
-
-            let from = $("#productionFrom").val()
-            let to = $("#productionTo").val()
-
-            getProduction(from, to)
-        })
-
-      // Populate the ingredients list when choosing a product
-      // Creating a table that accepts input how many ingredients are used
-        $("#product").on("click", (e) => {
-            $("#tableIngredientBody").html("")
-            let productId = $("#product").find(":selected").val()
-
-            if (productId == null) return 
-
-            request("GET", `/api/product/${ productId }`, {}, 
-                (res)=> {
-                    let html = ""
-                    for (let ingredient of res.recipe.ingredients) {
-                        let mainIngredient = ingredient.main_ingredient
-                        let multipliedByMainIngredient = ingredient.multiplied_by_main_ingredient 
-                        let multipliedByProduction = ingredient.multiplied_by_production
-                        
-                        html += `
-                        <tr data-ingredient="${ingredient.ingredient.id}">
-                            <td>${ ingredient.ingredient.name }</td>
-                            <td>...</td>
-                            <td>${ ingredient.ingredient.unit }</td>
-
-                            <td><input type="number" step=".1" data-recipe-quantity="${ingredient.quantity}" data-main-ingredient="${mainIngredient}" data-multiplied-by-main-ingredient="${multipliedByMainIngredient}" data-multiplied-by-production="${multipliedByProduction}" />
-                            </td>
-                        </tr>
-                        `
-                    }
-
-                    $("#tableIngredientBody").html(html)
-                    
-                    // TODO: Discuss if we can show the ingredients
-                    $("#tableIngredientBody [data-main-ingredient=false]").each((index, item) => {
-                        $(item).prop({type: "hidden"})
-                    })
-                    $("#tableIngredientBody [data-main-ingredient=true]").keyup((e) => {
-                        e.preventDefault()
-
-                        let value = e.target.value
-                        $("#tableIngredientBody [data-multiplied-by-main-ingredient=true]").each((index, item) => {
-                            let recipeQuantity = $(item).data("recipeQuantity")
-                            $(item).val(parseFloat(recipeQuantity) * parseFloat(value))
-                        })
-                    })
-                }
-            )
-        }) 
-
-        $("#quantityProduced").keyup((e) => {
-            e.preventDefault()
-            
-            let value = e.target.value
-            $("#tableIngredientBody [data-multiplied-by-production=true]").each((index, item) => {
-                $(item).val(value)
-            })
-        })
-    });
-    </script>
+    </style>
+{% endblock styles %}
+<!-- -->
+{% block content %}
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a href="#" class="card-link">Card link</a>
+                    <a href="#" class="card-link">Another link</a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a href="#" class="card-link">Card link</a>
+                    <a href="#" class="card-link">Another link</a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a href="#" class="card-link">Card link</a>
+                    <a href="#" class="card-link">Another link</a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a href="#" class="card-link">Card link</a>
+                    <a href="#" class="card-link">Another link</a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a href="#" class="card-link">Card link</a>
+                    <a href="#" class="card-link">Another link</a>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}

@@ -1,9 +1,10 @@
 
 
+from wsgiref import validate
 from rest_framework import serializers
 from django.db.models import F, Sum
 
-from .models import Ingredient, Product, Production, ProductionIngredients, Recipe, Sales, Supply, SupplyItem
+from .models import Ingredient, Product, Production, ProductionIngredients, Purchase, Recipe, Sales, Supplier, Supply, SupplyItem
 
 
 class SupplyItemSerializer(serializers.ModelSerializer):
@@ -82,3 +83,26 @@ class SupplySerializer(serializers.ModelSerializer):
     class Meta:
         model = Supply
         fields = ("__all__")
+
+
+class SupplierSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Supplier
+        fields = ("__all__")
+
+
+class PurchaseSerializer(serializers.ModelSerializer):
+    supplies = SupplySerializer(many=True)
+
+    class Meta:
+        model = Purchase
+        fields = ("__all__")
+
+    def create(self, validated_data):
+        supplies = validated_data.pop("supplies")
+        purchase = Purchase.objects.create(**validated_data)
+        for supply in supplies:
+            Supply.objects.create(
+                purchase_order=purchase, **supply)
+
+        return purchase

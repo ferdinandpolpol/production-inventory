@@ -3,11 +3,13 @@ from django.contrib import admin
 from .models import (
     CustomerType, Customer, Ingredient, Product, ProductionIngredients,
     SupplyItem, Supply, Recipe,
-    Production, Sales
-    )
+    Production, Sales, Purchase, Supplier
+)
+
 
 class IngredientInline(admin.TabularInline):
     model = Ingredient
+
 
 class RecipeAdmin(admin.ModelAdmin):
     inlines = [
@@ -25,3 +27,5 @@ admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(ProductionIngredients)
 admin.site.register(Production)
 admin.site.register(Sales)
+admin.site.register(Purchase)
+admin.site.register(Supplier)

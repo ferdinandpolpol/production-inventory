@@ -5,24 +5,64 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.db.models import F, Sum
-
-from .serializers import ProductSerializer, ProductionListSerializer, ProductionSerializer, RecipeSerializer, SalesSerializer, SupplySerializer
-
-from .models import Product, Production, ProductionIngredients, Sales, Customer, Supply, SupplyItem
+from django.contrib.auth import authenticate, login as _login, logout as _logout
+from django.contrib.auth.decorators import login_required
 
 
+from .serializers import ProductSerializer, ProductionListSerializer, ProductionSerializer, PurchaseSerializer, RecipeSerializer, SalesSerializer, SupplySerializer
+
+from .models import Product, Production, ProductionIngredients, Purchase, Sales, Customer, Supplier, Supply, SupplyItem
+
+
+@login_required
 def index(request):
+    """ Front page to show everything """
+    return render(request, 'index.html')
+
+
+def login(request):
+    context = {
+        "user": request.user
+    }
+
+    if request.method == "POST":
+        print(request.POST.__dict__)
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            _login(request, user)
+        else:
+            return HttpResponse("Invalid login")
+
+    return render(request, "login.html", context)
+
+
+@login_required
+def logout(request):
+    context = {
+        "user": request.user
+    }
+    if request.method == "POST":
+        _logout(request)
+
+    return redirect('login')
+
+
+@login_required
+def production(request):
     """ Front page to show everything """
     context = {
         'products': Product.objects.all()
     }
 
-    return render(request, 'index.html', context)
+    return render(request, 'production.html', context)
 
 
+@login_required
 def sales(request):
     context = {
         "sales": Sales.objects.all(),
@@ -32,6 +72,7 @@ def sales(request):
     return render(request, 'sales.html', context)
 
 
+@login_required
 def supply(request):
     context = {
         "supply_items": SupplyItem.objects.all(),
@@ -39,6 +80,17 @@ def supply(request):
     return render(request, 'supply.html', context)
 
 
+@login_required
+def purchase(request):
+    context = {
+        "purchase_types": Purchase.PURCHASE_TYPES,
+        "suppliers": Supplier.objects.all().order_by("name"),
+        "supplies": SupplyItem.objects.all().order_by("name")
+    }
+    return render(request, 'purchase.html', context)
+
+
+@login_required
 def reports(request):
     return render(request, 'reports.html')
 
@@ -114,6 +166,18 @@ def sales_api(request):
 def supply_api(request):
     if request.method == "POST":
         serializer = SupplySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def purchase_api(request):
+    if request.method == "POST":
+        serializer = PurchaseSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 

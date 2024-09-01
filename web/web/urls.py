@@ -23,13 +23,17 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
+    path('production/', views.production, name='production'),
+    path('login/', views.login, name='login'),
+    path('logout/', views.logout, name='logout'),
     path('sales/', views.sales, name='sales'),
     path('supply/', views.supply, name='supply'),
-    # path('purchase/', views.reports, name='reports'),
+    path('purchase/', views.purchase, name='reports'),
     path('reports/', views.reports, name='reports'),
 
     # APIs
     path('api/reports/', views.reports_api),
+    path('api/purchase/', views.purchase_api),
     path('api/sales/', views.sales_api),
     path('api/supply/', views.supply_api),
     path('api/product/<int:product_id>', views.get_product),
