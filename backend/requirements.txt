@@ -5,3 +5,4 @@ markdown
 django-filter
 django-admin-rangefilter
 django-admin-numeric-filter
+djangorestframework-simplejwt

@@ -33,6 +33,10 @@ from .models import (
 @login_required
 def index(request):
     """Front page to show everything"""
+    print("here")
+    print("here")
+    print("here")
+    print("here")
     return render(request, "index.html")
 
 
