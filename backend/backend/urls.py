@@ -35,6 +35,7 @@ router.register(r'purchase', viewsets.PurchaseViewSet)
 router.register(r'sales', viewsets.SalesViewSet)
 router.register(r'supply', viewsets.SupplyViewSet)
 router.register(r'product', viewsets.ProductViewSet)
+router.register(r'customer', viewsets.CustomerViewSet)
 
 schema_view = get_swagger_view(title="Amoren's API")
 

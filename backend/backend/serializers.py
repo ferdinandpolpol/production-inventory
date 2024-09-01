@@ -4,7 +4,19 @@ from wsgiref import validate
 from rest_framework import serializers
 from django.db.models import F, Sum
 
-from .models import Ingredient, Product, Production, ProductionIngredients, Purchase, Recipe, Sales, Supplier, Supply, SupplyItem
+from .models import (
+    Ingredient, 
+    Product, 
+    Production, 
+    ProductionIngredients, 
+    Purchase, 
+    Recipe, 
+    Sales, 
+    Supplier, 
+    Supply, 
+    SupplyItem, 
+    Customer
+)
 
 
 class SupplyItemSerializer(serializers.ModelSerializer):
@@ -113,3 +125,8 @@ class PurchaseSerializer(serializers.ModelSerializer):
                 purchase_order=purchase, **supply)
 
         return purchase
+
+class CustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ("__all__")    
