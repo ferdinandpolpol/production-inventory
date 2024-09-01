@@ -3,14 +3,14 @@
 Production
 {% endblock header %}
 {% block content %}
-<form id="createProductionData" class="form mt-5 p-5 border border-2">
+<form id="createProductionData" class="form-control form-control-lg mt-5 p-5 border border-2">
 
     <div class="row">
-        <div class="col">
+        <div class="col-12">
             <label for="dateProduced">Production Date</label>
             <input id="dateProduced" type="date" min=0 class="form-control" required />
         </div>
-        <div class="col">
+        <div class="col-12">
             <label for="product">Product</label>
             <select id="product" class="form-control" required>
                 <option value="">
@@ -24,8 +24,8 @@ Production
             </select>
         </div>
 
-        <div class="col">
-            <label for="quantityProduced">Actual</label>
+        <div class="col-12">
+            <label for="quantityProduced">Actual Production</label>
             <input id="quantityProduced" type="number" min=0 class="form-control" required />
         </div>
     </div>
@@ -35,7 +35,7 @@ Production
         </tbody>
     </table>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary ">Submit</button>
 </form>
 
 <div class="border border-2 p-5">
@@ -174,7 +174,7 @@ Production
 
         // Populate the ingredients list when choosing a product
         // Creating a table that accepts input how many ingredients are used
-        $("#product").on("click", (e) => {
+        $("#product").on("click change", (e) => {
             $("#tableIngredientBody").html("")
             let productId = $("#product").find(":selected").val()
 
@@ -195,7 +195,7 @@ Production
                             <td>...</td>
                             <td>${ingredient.ingredient.unit}</td>
 
-                            <td><input type="number" step=".1" 
+                            <td><input class="form-control form-control-lg" type="number" step=".1" 
                                 data-recipe-quantity="${ingredient.quantity}" 
                                 data-main-ingredient="${mainIngredient}" 
                                 data-multiplied-by-main-ingredient="${multipliedByMainIngredient}" 
