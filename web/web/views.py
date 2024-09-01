@@ -12,12 +12,12 @@ from django.contrib.auth import authenticate, login as _login, logout as _logout
 from django.contrib.auth.decorators import login_required
 
 
-from .serializers import ProductSerializer, ProductionListSerializer, ProductionSerializer, PurchaseSerializer, RecipeSerializer, SalesSerializer, SupplySerializer
+from .serializers import (ProductSerializer, ProductionListSerializer, ProductionSerializer, PurchaseSerializer, RecipeSerializer, SalesSerializer, SupplySerializer,)
 
 from .models import Product, Production, ProductionIngredients, Purchase, Sales, Customer, Supplier, Supply, SupplyItem
 
 
-# @login_required
+@login_required
 def index(request):
     """ Front page to show everything """
     return render(request, 'index.html')
@@ -41,7 +41,7 @@ def login(request):
     return render(request, "login.html", context)
 
 
-# @login_required
+@login_required
 def logout(request):
     context = {
         "user": request.user
@@ -52,7 +52,7 @@ def logout(request):
     return redirect('login')
 
 
-# @login_required
+@login_required
 def production(request):
     """ Front page to show everything """
     context = {
@@ -62,7 +62,7 @@ def production(request):
     return render(request, 'production.html', context)
 
 
-# @login_required
+@login_required
 def sales(request):
     context = {
         "sales": Sales.objects.all(),
@@ -72,7 +72,7 @@ def sales(request):
     return render(request, 'sales.html', context)
 
 
-# @login_required
+@login_required
 def supply(request):
     context = {
         "supply_items": SupplyItem.objects.all(),
@@ -80,7 +80,7 @@ def supply(request):
     return render(request, 'supply.html', context)
 
 
-# @login_required
+@login_required
 def purchase(request):
     context = {
         "purchase_types": Purchase.PURCHASE_TYPES,
@@ -90,7 +90,7 @@ def purchase(request):
     return render(request, 'purchase.html', context)
 
 
-# @login_required
+@login_required
 def reports(request):
     return render(request, 'reports.html')
 
