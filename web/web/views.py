@@ -9,9 +9,9 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.db.models import F, Sum
 
-from .serializers import ProductSerializer, ProductionListSerializer, ProductionSerializer, RecipeSerializer, SalesSerializer
+from .serializers import ProductSerializer, ProductionListSerializer, ProductionSerializer, RecipeSerializer, SalesSerializer, SupplySerializer
 
-from .models import Product, Production, Sales, Customer
+from .models import Product, Production, Sales, Customer, SupplyItem
 
 
 def index(request):
@@ -30,6 +30,13 @@ def sales(request):
         'customers': Customer.objects.all()
     }
     return render(request, 'sales.html', context)
+
+
+def supply(request):
+    context = {
+        "supply_items": SupplyItem.objects.all(),
+    }
+    return render(request, 'supply.html', context)
 
 
 @api_view(['GET'])
@@ -58,9 +65,13 @@ def production_api(request, id=None):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == "POST":
-        print(request.data["ingredients"])
+        kwargs = {"date": timezone.now().date()}
+
+        if request.data.get("date"):
+            kwargs.pop("date")
+
         serializer = ProductionSerializer(
-            data={**request.data, "date": timezone.now().date()})
+            data={**request.data, **kwargs})
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
@@ -87,6 +98,18 @@ def production_api_totals(request):
 def sales_api(request):
     if request.method == "POST":
         serializer = SalesSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def supply_api(request):
+    if request.method == "POST":
+        serializer = SupplySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 

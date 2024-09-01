@@ -49,7 +49,7 @@ class Supply(models.Model):
 
     item = models.ForeignKey(SupplyItem, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField()
-    supplied_at = models.DateTimeField()
+    supplied_at = models.DateField()
 
     def get_current_sum(self, id=None):
         return Supply.objects.values('item').annotate(item__sum=Sum('quantity'))
@@ -112,6 +112,7 @@ class Sales(models.Model):
     freebies = models.IntegerField()
     customer = models.ForeignKey(
         Customer, on_delete=models.SET_NULL, null=True)
+    date = models.DateField()
     actual_sale = models.FloatField()
     projected_sale = models.FloatField()
 

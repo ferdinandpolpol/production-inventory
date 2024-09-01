@@ -8,6 +8,7 @@
               href="{% static 'bootstrap-4.0.0-dist/css/bootstrap.css' %}"/>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script>
+            // POST Produ
             function request (method="GET", url, data={}, success_cb=null, error_cb=null) {
                 $.ajax({
                     type: method,
@@ -30,6 +31,22 @@
         <div class="container">
             {% block content %}{% endblock %}
         </div>
+        <script>
+            $(document).ready(() => {
+            
+                console.log("here")
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+                today = `${yyyy}-${mm}-${dd}`
+                
+                $("input[type='date']").each((index, item) => {
+                    console.log("Test")
+                    $(item).val(today)
+                })
+            })
+        </script>
         <!-- Scripts -->
         <script src="{% static 'bootstrap-4.0.0-dist/js/bootstrap.js' %}"  type="text/javascript" />
 {% block scripts %}{% endblock %}
