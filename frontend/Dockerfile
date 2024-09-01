@@ -1,18 +1,13 @@
 FROM node:18-alpine AS base
 
-# nextjs dockerfile
-#
+RUN mkdir -p /usr/src/app
 WORKDIR /app
 
 # Install dependencies
-COPY package.json ./
-RUN yarn install --frozen-lockfile
+COPY package*.json ./
+RUN yarn install
 
 # Copy the rest of the application
-COPY . .
+COPY . /app
 
-# Build the application
-RUN yarn build
-
-# Run the application
-CMD ["yarn", "run", "start"]
+RUN yarn next build
