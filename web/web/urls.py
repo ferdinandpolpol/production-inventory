@@ -26,4 +26,7 @@ urlpatterns = [
 
     # APIs
     path('api/product/<int:product_id>', views.get_product),
+    path('api/production/', views.production_api),
+    path('api/production/<int:id>', views.production_api),
+    path('api/production/totals/', views.production_api_totals),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -45,15 +45,21 @@ class Supply(models.Model):
         return Supply.objects.values('item').annotate(item__sum=Sum('quantity'))
 
 class Ingredient(models.Model):
-    recipe = models.ForeignKey("Recipe", on_delete=models.CASCADE)
+    recipe = models.ForeignKey("Recipe", related_name="ingredients", on_delete=models.CASCADE)
     ingredient = models.ForeignKey(SupplyItem, on_delete=models.SET_NULL, null=True)
     quantity = models.FloatField(help_text="Quantity of the ingredient used")
 
 class Recipe(models.Model):
+    name = models.CharField(max_length=255)
     quantity_produced = models.FloatField(help_text="How many this recipe will produce for the product")
 
+    def __str__(self) -> str:
+        return self.name
+
+
+
 class ProductionIngredients(models.Model):
-    production = models.ForeignKey('Production', on_delete=models.SET_NULL, null=True)
+    production = models.ForeignKey('Production', related_name="ingredients", on_delete=models.SET_NULL, null=True)
     ingredient = models.ForeignKey(SupplyItem, on_delete=models.SET_NULL, null=True)
     quantity = models.FloatField()
 
