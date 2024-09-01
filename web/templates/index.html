@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<form class="form">
+    <label for="product">Product</label>
+    <select id="product">
+        {% for product in products %}
+        <option>{{ product.name }}</option>
+        {% endfor %}
+    </select>
+    
+    <label for="quantityProduced">Actual Production</label>
+    <input id="quantityProduced" type="text" min=0 />
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ITM</th>
+                <th>QTY</th>
+                <th>UNIT</th>
+                <th>AMOUNT USED</th>
+            </tr>
+        </thead>
+        <tbody id="tableIngredientBody">
+        </tbody>
+    </table>
+    
+</form>
+
+
+<script>
+    
+    $("#product").on("click", (e) => {
+        $ajax({
+            url: "",
+            data: {},
+            success: (res) => {
+                $("#tableIngredientBody").html(
+                    
+                )
+            }
+        })
+    })
+</script>
+
+{% endblock %}

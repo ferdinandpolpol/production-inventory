@@ -9,7 +9,7 @@ class Customer(models.Model):
     name = models.CharField(max_length=255)
     address = models.TextField()
     contact = models.CharField(max_length=20)
-    customer_type = models.ManyToManyField(CustomerType, on_delete=models.SET_NULL)
+    customer_type = models.ForeignKey(CustomerType, on_delete=models.SET_NULL, null=True)
 
 
 class Product(models.Model):
@@ -17,6 +17,9 @@ class Product(models.Model):
     code = models.CharField(max_length=255)
     # Add non-negative validator
     price = models.FloatField()
+
+    def __str__(self) -> str:
+        return self.code
 
     def get_ingredients(self, *args, **kwargs):
         return Recipe.objects.filter(product=self)
@@ -26,8 +29,14 @@ class SupplyItem(models.Model):
     price = models.FloatField()
     unit = models.CharField(max_length=255)
 
+    def __str__(self) -> str:
+        return self.name
+
 class Supply(models.Model):
-    item = models.ForeignKey(SupplyItem, on_delete=models.SET_NULL)
+    class Meta:
+        verbose_name_plural = 'Supplies'
+
+    item = models.ForeignKey(SupplyItem, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField()
     supplied_at = models.DateTimeField()
     
@@ -35,13 +44,18 @@ class Supply(models.Model):
         return Supply.objects.values('item').annotate(item__sum=Sum('quantity'))
 
 class Recipe(models.Model):
-    product = models.ForeignKey(Product)
-    ingredient = models.ForeignKey(SupplyItem)
-    quantity = models.PositiveIntegerField()
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    ingredient = models.ForeignKey(SupplyItem, on_delete=models.SET_NULL, null=True)
+    quantity = models.FloatField()
+
+class ProductionIngredients(models.Model):
+    production = models.ForeignKey('Production', on_delete=models.SET_NULL, null=True)
+    ingredient = models.ForeignKey(SupplyItem, on_delete=models.SET_NULL, null=True)
+    quantity = models.FloatField()
 
 class Production(models.Model):
     """ This also acts as the inventory """
-    product = models.ForeignKey(Product)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField()
 
     def save(self, *args, **kwargs):
@@ -68,7 +82,7 @@ class Production(models.Model):
     #         # supply in inventory
     #         for supply in supplies:
     #             if current_ingredients_used > supply.quantity:
-    #                 current_ingredients_used -= supply.quantity
+    #                 curremodels.SET_NULL, null=Truent_ingredients_used -= supply.quantity
     #                 supply.quantity = 0
     #                 supply.save()
     #             else:
@@ -86,8 +100,8 @@ class Production(models.Model):
 
 class Sales(models.Model):
     sales_type = models.CharField(max_length=255)
-    product = models.ForeignKey(Product)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField()
-    customer = models.ForeignKey(Customer)
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
 
 
