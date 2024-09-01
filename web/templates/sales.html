@@ -19,7 +19,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group">
+            {% comment %} <div class="form-group">
                 <label for="customer">Customer</label>
                 <select id="customer" class="form-control">
                     <option value="none">
@@ -43,7 +43,47 @@
             <div class="form-group">
                 <label for="salesRevenue">SALE (PHP)</label>
                 <input type="number" id="salesRevenue" class="form-control" />
-            </div>
+            </div> {% endcomment %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Amount Sold</th>
+                        <th>Freebies</th>
+                        <th>Sale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="salesRow">
+                        <td>
+                            <select id="customer" class="form-control">
+                                <option value="none">
+                                    ...
+                                </option>
+                                {% for customer in customers %}
+                                    <option value="{{ customer.id }}">
+                                        {{ customer.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <input type="number" id="quantitySale" class="form-control" />
+                        </td>
+                        <td>
+                            <input type="number" id="quantityFreebies" class="form-control" />
+                        </td>
+                        <td>
+                            <input type="number" id="salesRevenue" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <button type="button" class="btn btn-secondary" onClick="addNewTableRow()">+</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <div class="form-group">
                 <label for="salesDate">Date</label>
                 <input type="date" id="salesDate" class="form-control" />
@@ -51,22 +91,53 @@
             <button type="submit" class="btn btn-primary mb-2">Submit Sale</button>
         </form>
     </div>
-    <script>$("#salesForm").on("submit", (e) => {
-        e.preventDefault()
-
-        let data = {
-            sales_type: String($("#salesType").val()),
-            product: String($("#productSale").find(":selected").val()),
-            customer: String($("#customer").find(":selected").val()),
-            quantity: String($("#quantitySale").val()),
-            freebies: String($("#quantityFreebies").val()),
-            actual_sale: String($("#salesRevenue").val()),
-            date: String($("#salesDate").val()),
+    <script>
+        function addNewTableRow () {
+            let newSalesRow = `
+            <tr class="salesRow">
+                <td>
+                    <select id="customer" class="form-control">
+                        <option value="none">
+                            ...
+                        </option>
+                        {% for customer in customers %}
+                            <option value="{{ customer.id }}">
+                                {{ customer.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" id="quantitySale" class="form-control" />
+                </td>
+                <td>
+                    <input type="number" id="quantityFreebies" class="form-control" />
+                </td>
+                <td>
+                    <input type="number" id="salesRevenue" class="form-control" />
+                </td>
+            </tr>
+            `
+            $(".salesRow").last().after(newSalesRow)
         }
 
-        request("POST", "/api/sales/", data, (res) => {
-            alert("Successfully created sale entry.")
-        })
+        $("#salesForm").on("submit", (e) => {
+            // each .salesRow, get all input data
+            e.preventDefault()
+
+            let data = {
+                sales_type: String($("#salesType").val()),
+                product: String($("#productSale").find(":selected").val()),
+                customer: String($("#customer").find(":selected").val()),
+                quantity: String($("#quantitySale").val()),
+                freebies: String($("#quantityFreebies").val()) || 0,
+                actual_sale: String($("#salesRevenue").val()) || 0,
+                date: String($("#salesDate").val()),
+            }
+
+            request("POST", "/api/sales/", data, (res) => {
+                alert("Successfully created sale entry.")
+            })
         })
 
     </script>

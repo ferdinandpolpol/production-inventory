@@ -55,6 +55,7 @@ The project was created to automate my family's business.
 - [ ] User Modification Logging
 - [ ] Supply Prices
 - [ ] Costs Reports
+- [ ] Payroll
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
