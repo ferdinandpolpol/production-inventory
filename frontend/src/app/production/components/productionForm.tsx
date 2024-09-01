@@ -69,6 +69,7 @@ export const ProductionForm = () => {
         console.error(error);
       }
     }
+    getProducts();
   }, []);
 
   const handleProductChange = (value: string) => {

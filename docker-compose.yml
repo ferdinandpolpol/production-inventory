@@ -13,12 +13,16 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+    networks:
+      - default
   
   frontend:
     restart: always
     volumes:
       - ./frontend:/usr/src/app
       - ./frontend/.next:/app/.next
+    networks:
+      - default
 
   nginx: 
     image: nginx:latest
@@ -38,7 +42,11 @@ services:
       - backend
       - frontend
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    networks:
+      - default
 
+networks:
+  default:
 
 
 volumes:
