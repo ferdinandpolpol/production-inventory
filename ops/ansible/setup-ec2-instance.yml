@@ -64,14 +64,37 @@
         repo: https://github.com/ferdinandpolpol/production-inventory.git
         dest: /home/ec2-user/production-inventory
         update: yes
+        force: yes
+        # branch main
+        version: main
 
-    # scheduled backup every 8AM UTC
-    # on the script ops/scripts/backup.sh
-    - name: Setup scheduled backup job
-      cron:
-        name: "backup"
-        minute: 0
-        hour: 8
-        job: "cd /home/ec2-user/production-inventory && ./ops/scripts/backup.sh"
-        user: ec2-user
-        cron_file: backup
+    - name: Copy backup.service to systemd directory
+      copy:
+        src: ../systemd/backup.service
+        dest: /etc/systemd/system/backup.service
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copy backup.timer to systemd directory
+      copy:
+        src: ../systemd/backup.timer
+        dest: /etc/systemd/system/backup.timer
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Reload systemd to pick up new service and timer files
+      command: systemctl daemon-reload
+
+    - name: Enable and start the backup service
+      systemd:
+        name: backup.service
+        enabled: yes
+        state: started
+
+    - name: Enable and start the backup timer
+      systemd:
+        name: backup.timer
+        enabled: yes
+        state: started

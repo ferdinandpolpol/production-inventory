@@ -1,0 +1,9 @@
+[Unit]
+Description=Backup Service
+After=network.target
+
+[Service]
+ExecStart=/home/ec2-user/production-inventory/ops/scripts/backup.sh
+
+[Install]
+WantedBy=default.target
