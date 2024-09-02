@@ -64,3 +64,14 @@
         repo: https://github.com/ferdinandpolpol/production-inventory.git
         dest: /home/ec2-user/production-inventory
         update: yes
+
+    # scheduled backup every 8AM UTC
+    # on the script ops/scripts/backup.sh
+    - name: Setup scheduled backup job
+      cron:
+        name: "backup"
+        minute: 0
+        hour: 8
+        job: "cd /home/ec2-user/production-inventory && ./ops/scripts/backup.sh"
+        user: ec2-user
+        cron_file: backup
