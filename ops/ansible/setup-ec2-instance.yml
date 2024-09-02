@@ -1,0 +1,66 @@
+
+
+# ansible playbook to install on an Amazon Linux 2023
+# docker, git, python, node, npm, and yarn
+
+- hosts: "{{ HOST }}"
+  become: yes
+  become_user: root
+  tasks:
+    - name: Install docker
+      yum:
+        name: docker
+        state: present
+
+    - name: Start docker
+      service:
+        name: docker
+        state: started
+
+    - name: Enable docker
+      service:
+        name: docker
+        enabled: yes
+    
+    - name: Install docker compose
+      shell: curl -L "www.github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+      args:
+        creates: /usr/local/bin/docker-compose
+
+    - name: usermod
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
+
+    - name: Install git
+      yum:
+        name: git
+        state: present
+
+    - name: Install python
+      yum:
+        name: python3
+        state: present
+
+    - name: Install node
+      yum:
+        name: nodejs
+        state: present
+
+    - name: Install npm
+      yum:
+        name: npm
+        state: present
+
+    - name: Install yarn
+      npm:
+        name: yarn
+        global: yes
+        state: present
+
+    - name: Clone repository
+      git:
+        repo: https://github.com/ferdinandpolpol/production-inventory.git
+        dest: /home/ec2-user/production-inventory
+        update: yes
