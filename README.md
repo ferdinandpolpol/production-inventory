@@ -1,6 +1,6 @@
 
 ## About The Project
-The project was created to automate processes for FAMILY BUSINESS
+The project was created to automate processes for the Family Business. I'm also treating this as a pet project where I practice various JS Frameworks (NextJS) and other things that might interest me (DevOps stuff with Terraform, K8s in the future, etc)
 
 ### Built With
 
