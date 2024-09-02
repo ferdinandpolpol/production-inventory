@@ -1,5 +1,5 @@
 from django.contrib import admin
-from rangefilter.filter import DateRangeFilter
+from rangefilter.filters import DateRangeFilter
 from admin_numeric_filter.admin import SingleNumericFilter
 
 from .models import (
