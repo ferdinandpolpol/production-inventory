@@ -1,0 +1,16 @@
+
+
+# run the ./update.sh script inside the /home/ec2-user/production-inventory directory
+```
+hosts: "{{ HOST }}"
+become: true
+tasks:
+  - name: Clone repository
+    git:
+      repo: https://github.com/ferdinandpolpol/production-inventory.git
+      dest: /home/ec2-user/production-inventory
+      update: yes
+  
+  - name: Run update.sh
+    command: /home/ec2-user/production-inventory/update.sh
+```
