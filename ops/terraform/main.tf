@@ -90,3 +90,12 @@ resource "aws_route53_record" "app_server_dns" {
   ttl     = "300"
   records = [aws_eip.app_server_eip.public_ip]
 }
+
+resource "aws_route53_record" "app_server_dns_www" {
+  zone_id = aws_route53_zone.amoren_webapp_zone.zone_id
+  name    = "www.sys.amorens.ph"
+  type    = "A"
+  ttl     = "300"
+  records = [aws_eip.app_server_eip.public_ip]
+}
+
