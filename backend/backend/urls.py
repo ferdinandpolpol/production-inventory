@@ -38,6 +38,8 @@ router.register(r'sales', viewsets.SalesViewSet)
 router.register(r'supply', viewsets.SupplyViewSet)
 router.register(r'product', viewsets.ProductViewSet)
 router.register(r'customer', viewsets.CustomerViewSet)
+router.register(r'supply_item', viewsets.SupplyItemViewset)
+router.register(r'supplier', viewsets.SupplierViewset)
 
 schema_view = get_schema_view(
    openapi.Info(

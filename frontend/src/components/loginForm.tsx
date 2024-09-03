@@ -37,7 +37,7 @@ export const Form = () => {
   };
 
   return (
-    <div className="sm:shadow-xl px-10 py-10 sm:bg-slate-50 rounded-xl space-y-12">
+    <div className="sm:shadow-xl px-10 py-10 sm:bg-slate-50 rounded-xl space-y-12 mt-40">
       <h1 className="font-semibold text-2xl">Login</h1>
       <form onSubmit={onSubmit} className="space-y-8 w-full sm:w-[400px]">
         <div className="grid w-full items-center gap-1">

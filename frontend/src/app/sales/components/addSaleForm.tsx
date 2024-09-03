@@ -26,7 +26,7 @@ interface AddSaleFormProps {
   products: Product[];
   addSaleData: (data: {
     productId: string | undefined;
-    product: string | undefined; // Update the type of 'product' to 'string | undefined'
+    product: string | undefined;
     quantity: number;
     freebies: number;
     sales: number;
@@ -34,7 +34,9 @@ interface AddSaleFormProps {
 }
 
 export const AddSaleForm = ({ products, addSaleData }: AddSaleFormProps) => {
-  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(undefined);
+  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(
+    undefined,
+  );
   const [quantity, setQuantity] = useState(0);
   const [freebies, setFreebies] = useState(0);
   const [sales, setSales] = useState(0);
@@ -43,7 +45,7 @@ export const AddSaleForm = ({ products, addSaleData }: AddSaleFormProps) => {
     const product = products.find((product) => product.code === value);
     setSelectedProduct(product);
   };
-  
+
   const addToTable = () => {
     addSaleData({
       productId: selectedProduct?.id,
@@ -64,9 +66,7 @@ export const AddSaleForm = ({ products, addSaleData }: AddSaleFormProps) => {
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="product">Product</Label>
-              <Select
-                onValueChange={(value) => handleProductChange(value)}
-              >
+              <Select onValueChange={(value) => handleProductChange(value)}>
                 <SelectTrigger id="product">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>

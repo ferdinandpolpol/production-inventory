@@ -47,10 +47,12 @@ export const SelectCustomerForm = ({
       date: inputDate,
       salesType: selectedSalesType,
       customer: selectedCustomer,
-      customerId: customers.find((customer) => customer.name === selectedCustomer)?.id || "",
+      customerId:
+        customers.find((customer) => customer.name === selectedCustomer)?.id ||
+        "",
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputDate, selectedSalesType, selectedCustomer]);
-
 
   return (
     <Card className="h-full">
@@ -107,8 +109,7 @@ export const SelectCustomerForm = ({
           </div>
         </form>
       </CardContent>
-      <CardFooter className="">
-      </CardFooter>
+      <CardFooter className=""></CardFooter>
     </Card>
   );
 };

@@ -37,7 +37,6 @@ const refreshToken = async (token: string) => {
     localStorage?.removeItem("user");
     window.location.href = `/?next=${window.location.pathname}`;
     throw new Error("Refresh token is invalid or expired.");
-
   }
 };
 

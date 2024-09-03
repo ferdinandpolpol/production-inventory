@@ -1,7 +1,7 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet, ReadOnlyModelViewSet
 from rest_framework.mixins import ListModelMixin
 
 
@@ -16,7 +16,9 @@ from .serializers import (
     SalesSerializer,
     SupplySerializer,
     ProductSerializer,
-    CustomerSerializer
+    CustomerSerializer,
+    SupplyItemSerializer,
+    SupplierSerializer
 )
 
 from .models import (
@@ -25,7 +27,9 @@ from .models import (
     Sales,
     Supply,
     Product,
-    Customer
+    Customer,
+    SupplyItem,
+    Supplier
 )
 
 
@@ -131,3 +135,13 @@ class CustomerViewSet(ListModelMixin, GenericViewSet):
 
         return Response(data, status=status.HTTP_200_OK)
 
+
+class SupplyItemViewset(ReadOnlyModelViewSet):
+    queryset = SupplyItem.objects.all().order_by("name")
+    serializer_class = SupplyItemSerializer
+    pagination_class = None
+
+class SupplierViewset(ReadOnlyModelViewSet):
+    queryset = Supplier.objects.all().order_by("name")
+    serializer_class = SupplierSerializer
+    pagination_class = None

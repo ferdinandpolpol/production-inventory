@@ -24,11 +24,7 @@ export const Navbar = () => {
     },
     {
       id: 3,
-      link: "purchases",
-    },
-    {
-      id: 4,
-      link: "delivery",
+      link: "purchase",
     },
     {
       id: 5,
@@ -50,13 +46,14 @@ export const Navbar = () => {
         ]);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div className="flex justify-between items-center w-full h-15 px-4 text-white bg-gray-100 fixed nav z-50">
+    <div className="flex justify-between items-center w-full h-15 px-4 text-white bg-transparent fixed nav z-50">
       <div>
-        <h1 className="text-6xl font-signature ml-2 text-rose-600 text-bold">
-          Amoren
+        <h1 className="text-6xl font-signature ml-2 text-white-600 text-bold">
+          Amoren&apos;s
         </h1>
       </div>
 
@@ -64,7 +61,7 @@ export const Navbar = () => {
         {links.map(({ id, link }) => (
           <li
             key={id}
-            className="nav-links px-4 cursor-pointer capitalize font-medium text-gray-500 hover:scale-105 hover:text-rose-500 duration-200 link-underline"
+            className="nav-links px-4 cursor-pointer capitalize font-medium text-white-500 hover:scale-105 hover:text-rose-500 duration-200 link-underline"
           >
             {link === "logout" ? (
               <a onClick={LogOut} href="/">

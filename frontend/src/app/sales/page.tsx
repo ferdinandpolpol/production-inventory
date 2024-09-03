@@ -19,8 +19,8 @@ import {
 } from "@/components/ui/table";
 
 interface SalesData {
-  productId: string;
-  product: string;
+  productId: string | undefined;
+  product: string | undefined;
   quantity: number;
   freebies: number;
   sales: number;
@@ -31,7 +31,7 @@ export default function SalesPage() {
   const [products, setProducts] = useState([]);
   const [showSaleForm, setShowSaleForm] = useState(false);
   const [salesData, setSalesData] = useState<SalesData[]>([]);
-  const [_saleInitialData, setSaleInitialData] = useState<any>(null);  
+  const [_saleInitialData, setSaleInitialData] = useState<any>(null);
 
   useEffect(() => {
     async function getCustomers() {
@@ -80,7 +80,7 @@ export default function SalesPage() {
   const deleteItem = (index: number) => {
     const newData = salesData.filter((_, i) => i !== index);
     setSalesData(newData);
-  }
+  };
 
   const resetSales = () => {
     // confirm reset
@@ -89,15 +89,19 @@ export default function SalesPage() {
     }
 
     setSalesData([]);
-  }
+  };
 
-  const finalizeSale = async () => {  
+  const finalizeSale = async () => {
     // customer, date, salesData length validation
-    if (!_saleInitialData || !salesData.length) {
+    if (
+      !_saleInitialData.customerId ||
+      !_saleInitialData.salesType ||
+      !salesData.length
+    ) {
       alert("Please select a customer and add sales data");
-      return
+      return;
     }
-    
+
     const data = salesData.map((sale) => {
       return {
         sales_type: _saleInitialData.salesType,
@@ -108,7 +112,7 @@ export default function SalesPage() {
         freebies: sale.freebies,
         actual_sale: sale.sales,
       };
-    })
+    });
 
     try {
       const response = await request("/sales/", {
@@ -117,13 +121,14 @@ export default function SalesPage() {
       });
 
       if (response.ok) {
-        alert(`Sales for customer ${_saleInitialData.customer} has been finalized`);
+        alert(
+          `Sales for customer ${_saleInitialData.customer} has been finalized`,
+        );
         setSalesData([]);
       }
     } catch (error) {
       console.error(error);
     }
-
   };
 
   return (
@@ -147,9 +152,8 @@ export default function SalesPage() {
           </div>
 
           <div className="flex flex-row justify-start p-4">
-
             <div className="w-full p-4">
-              <Button 
+              <Button
                 className="bg-rose-500 hover:bg-rose-800 sticky bottom-0"
                 onClick={(e) => resetSales()}
               >
@@ -158,10 +162,12 @@ export default function SalesPage() {
             </div>
 
             <div className="w-full p-4">
-              <Button 
+              <Button
                 className="w-full bg-rose-500 hover:bg-rose-800 sticky bottom-0"
                 onClick={() => finalizeSale()}
-              >Finalize Sale</Button>
+              >
+                Finalize Sale
+              </Button>
             </div>
           </div>
           <div className="w-full p-4">
@@ -182,12 +188,14 @@ export default function SalesPage() {
                     <TableCell>{sale.freebies}</TableCell>
                     <TableCell>₱ {sale.sales}</TableCell>
                     <TableCell>
-                      <Button 
-                      variant="secondary" 
-                      className="border"
-                      onClick={(e) => { deleteItem(index) } }
+                      <Button
+                        variant="secondary"
+                        className="border"
+                        onClick={(e) => {
+                          deleteItem(index);
+                        }}
                       >
-                        <TrashIcon className="h-4 w-4" />  
+                        <TrashIcon className="h-4 w-4" />
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -199,14 +207,15 @@ export default function SalesPage() {
                       <TableCell>Total</TableCell>
                       <TableCell></TableCell>
                       <TableCell></TableCell>
-                      <TableCell>₱ {salesData.reduce((acc, sale) => acc + sale.sales, 0)}</TableCell>
+                      <TableCell>
+                        ₱ {salesData.reduce((acc, sale) => acc + sale.sales, 0)}
+                      </TableCell>
                     </TableRow>
                   ) : null
                 ) : null}
               </TableBody>
             </Table>
           </div>
-
         </div>
       ) : null}
     </div>
