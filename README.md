@@ -11,6 +11,22 @@ The project was created to automate processes for the Family Business. I'm also 
 * Django
 * JQuery - Used because it's just a simple app
 
+# Local Setup
+```
+cp dc.local.yml docker-compose.override.yml
+docker-compose build
+docker-compose up
+
+# might need to run migrations
+docker-compose exec backend python manage.py migrate
+```
+
+You should now be able to access
+- Frontend `http://localhost:3000`
+- Backend API `http://localhost:8000/api`
+- Django Admin `http://localhost:8000/admin`
+
+
 
 # Infrastructure Details
 
