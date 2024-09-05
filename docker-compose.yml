@@ -1,16 +1,54 @@
 version: '3'
 
 services:
-  web:
+  backend:
     restart: always
-    build: ./web
     volumes:
       - web-static:/usr/src/app/static
-      - ./web:/usr/src/app
+      - ./backend:/usr/src/app
     env_file: .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    networks:
+      - default
+  
+  frontend:
+    restart: always
+    volumes:
+      - ./frontend:/usr/src/app
+      - ./frontend/.next:/app/.next
+    networks:
+      - default
+
+  nginx: 
+    image: nginx:latest
+    restart: always
+    volumes:
+      - web-static:/static
+      - ./backend:/usr/src/app
+      - ./frontend/.next:/usr/share/nginx/html/.next
+      - ./frontend/public:/usr/share/nginx/html/public
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    ports:
+      - '80:80'
+      - '443:443'
+    depends_on:
+      - backend
+      - frontend
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    networks:
+      - default
+
+networks:
+  default:
+
 
 volumes:
   web-django:
   web-static:
-  pgdata:
-  redisdata:
