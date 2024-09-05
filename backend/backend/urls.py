@@ -66,6 +66,7 @@ urlpatterns = [
 
     # Other APIs
     path('api/reports/', views.reports_api),
+    path('reports/', views.reports),
 
     # Swagger
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
