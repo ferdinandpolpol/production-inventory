@@ -21,7 +21,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { Customer } from "@/types/customer";
 
-export const SelectVendorForm = ({ suppliers }) => {
+export const SelectVendorForm = ({ suppliers, supplierData }) => {
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
+  const [purchaseAmount, setPurchaseAmount] = useState(0);
+  const [purchaseNotes, setPurchaseNotes] = useState("");
+  const [supplyDate, setSupplyDate] = useState(new Date().toISOString().split("T")[0]);
+
+  useEffect(() => { 
+    supplierData({selectedSupplier, purchaseAmount, purchaseNotes, supplyDate});
+  }, [selectedSupplier, purchaseAmount, purchaseNotes, supplyDate]);
+
+  const handleSupplierChange = (value) => {
+    const supplier = suppliers.find((supplier) => supplier.name === value);
+    setSelectedSupplier(supplier);
+  }
+
   return (
     <Card className="h-full">
       <CardHeader>
@@ -37,12 +51,13 @@ export const SelectVendorForm = ({ suppliers }) => {
                 id="supplyDate"
                 type="date"
                 defaultValue={new Date().toISOString().split("T")[0]}
+                onChange={(e) => setSupplyDate(e.target.value)}
               />
             </div>
 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="supplier">Supplier / Vendor</Label>
-              <Select>
+              <Select onValueChange={ (value) => handleSupplierChange(value) }>
                 <SelectTrigger id="supplier">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
@@ -64,12 +79,16 @@ export const SelectVendorForm = ({ suppliers }) => {
                 type="number"
                 step={0.01}
                 defaultValue={0}
+                onChange={(e) => setPurchaseAmount(parseFloat(e.target.value))}
               />
             </div>
 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="purchaseNotes">Purchase Notes</Label>
-              <Textarea id="purchaseAmount" placeholder="Enter notes here..." />
+              <Textarea 
+                id="purchaseAmount" placeholder="Enter notes here..." 
+                onChange={(e) => setPurchaseNotes(e.target.value)}
+              />
             </div>
           </div>
         </form>

@@ -13,6 +13,7 @@ from .serializers import (
     ProductionListSerializer,
     ProductionSerializer,
     PurchaseSerializer,
+    PurchaseSubmitSerializer,
     SalesSerializer,
     SupplySerializer,
     ProductSerializer,
@@ -104,7 +105,7 @@ class PurchaseViewSet(ListModelMixin, GenericViewSet):
     serializer_class = PurchaseSerializer
 
     def create(self, request, *args, **kwargs):
-        serializer = PurchaseSerializer(data=request.data)
+        serializer = PurchaseSubmitSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 

@@ -97,7 +97,13 @@ class SalesSerializer(serializers.ModelSerializer):
         exclude = ("projected_sale",)
 
 
+class PurchaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Purchase
+        fields = ("__all__")
 class SupplySerializer(serializers.ModelSerializer):
+    # purchase order not required
+    purchase_order = PurchaseSerializer(required=False)
     class Meta:
         model = Supply
         fields = ("__all__")
@@ -109,7 +115,7 @@ class SupplierSerializer(serializers.ModelSerializer):
         fields = ("__all__")
 
 
-class PurchaseSerializer(serializers.ModelSerializer):
+class PurchaseSubmitSerializer(serializers.ModelSerializer):
     # allow supplies to be null
     supplies = SupplySerializer(many=True, required=False)
 

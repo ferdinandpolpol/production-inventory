@@ -21,7 +21,7 @@ interface SupplyItem {
 
 interface SupplyItemsProps {
   supplyItems: SupplyItem[];
-  finalizePurchase: () => void;
+  finalizePurchase: (records: PurchaseRecord[]) => void;
 }
 
 interface PurchaseRecord {
@@ -34,12 +34,31 @@ export const SupplyForm = ({
   supplyItems,
   finalizePurchase,
 }: SupplyItemsProps) => {
-  console.log(supplyItems);
-  const [purchases, setPurchases] = useState([]);
-  const [submitPurchase, setSubmitPurchase] = useState(false);
+  const [purchases, setPurchases] = useState<PurchaseRecord[]>([]);
 
   const addNewPurchase = () => {
-    setPurchases([...purchases, { id: Date.now(), quantity: 1, item: "" }]);
+    const newPurchase = { id: Date.now(), quantity: 1, item: "" };
+    setPurchases((prev) => [...prev, newPurchase]);
+  };
+
+  const handleAddPurchase = (id: number, value: string) => {
+    setPurchases((prev) =>
+      prev.map((purchase) =>
+        purchase.id === id ? { ...purchase, item: value } : purchase
+      )
+    );
+  };
+
+  const handleQuantityChange = (id: number, value: number) => {
+    setPurchases((prev) =>
+      prev.map((purchase) =>
+        purchase.id === id ? { ...purchase, quantity: value } : purchase
+      )
+    );
+  };
+
+  const handleFinalizePurchase = () => {
+    finalizePurchase(purchases);
   };
 
   return (
@@ -56,31 +75,40 @@ export const SupplyForm = ({
           <PlusCircledIcon className="h-4 w-4 ml-2" />
         </Button>
         <div className="flex-1 w-72" />
-        {purchases.length > 0 ? (
+        {purchases.length > 0 && (
           <Button
             className="flex-1 w-20 mt-4 bg-rose-500 hover:bg-rose-800 right-0"
-            onClick={finalizePurchase}
+            onClick={handleFinalizePurchase}
           >
             Submit Purchase Record
           </Button>
-        ) : null}
+        )}
       </div>
-      {purchases.map((purchase: PurchaseRecord, index: number) => (
+      {purchases.map((purchase) => (
         <div key={purchase.id} className="flex gap-4 mt-4">
-          <Select>
+          <Select
+            onValueChange={(value) => handleAddPurchase(purchase.id, value)}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select" />
             </SelectTrigger>
 
             <SelectContent>
-              {supplyItems.map((item: any, index: number) => (
-                <SelectItem key={index} value={item.id}>
-                  {item.name}
+              {supplyItems.map((item) => (
+                <SelectItem key={item.id} value={item.id}>
+                  {item.name} / {item.unit}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Input type="number" defaultValue={purchase.quantity} />
+
+          <Input
+            type="number"
+            defaultValue={purchase.quantity}
+            onChange={(e) =>
+              handleQuantityChange(purchase.id, Number(e.target.value))
+            }
+          />
         </div>
       ))}
     </div>
